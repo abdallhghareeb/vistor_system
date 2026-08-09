@@ -1,23 +1,16 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import '../../../../core/helper_function/api.dart';
-import '../models/zone_model.dart';
+import '../models/version_model.dart';
 
 class SettingsRemoteDataSource {
-
   final ApiHandel apiHandel;
   SettingsRemoteDataSource(this.apiHandel);
 
-  Future<Either<DioException,List<ZoneModel>>> getZones()async{
-    var response = await apiHandel.get('WorkZones/mobile/config');
-    List<ZoneModel> list=[] ;
+  Future<Either<DioException, VersionModel>> mobileVersion() async {
+    var response = await apiHandel.get('MobileVersion');
     return response.fold((l) => Left(l), (r) {
-      for (var item in r.data['data']['zones']) {
-        list.add(ZoneModel.fromJson(item));
-      }
-      return Right(list);
+      return Right(VersionModel.fromJson(r.data['data']));
     });
   }
-
-
 }

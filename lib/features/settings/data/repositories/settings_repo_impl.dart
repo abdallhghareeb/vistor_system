@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import '../../domain/entities/zone_entity.dart';
+import '../../domain/entities/version_entity.dart';
 import '../../domain/repositories/settings_repo.dart';
 import '../datasources/remote.dart';
 
@@ -10,8 +10,7 @@ class SettingsRepoImpl implements SettingsRepo {
   SettingsRepoImpl(this.settingsRemoteDataSource);
 
   @override
-  Future<Either<DioException, List<ZoneEntity>>> getZones() async {
-    return settingsRemoteDataSource.getZones();
+  Future<Either<DioException, VersionEntity>> mobileVersion() async {
+    return settingsRemoteDataSource.mobileVersion();
   }
-
 }

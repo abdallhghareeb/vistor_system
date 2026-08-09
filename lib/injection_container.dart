@@ -4,14 +4,6 @@ import 'features/auth/data/datasources/remote.dart';
 import 'features/auth/data/repositories/user_repo_impl.dart';
 import 'features/auth/domain/repositories/user_repo.dart';
 import 'features/auth/domain/usecases/user_usecases.dart';
-import 'features/excuse/data/datasources/remote.dart';
-import 'features/excuse/data/repositories/excuse_repo_impl.dart';
-import 'features/excuse/domain/repositories/excuse_repo.dart';
-import 'features/excuse/domain/usecases/excuse_usecases.dart';
-import 'features/history/data/datasources/remote.dart';
-import 'features/history/data/repositories/history_repo_impl.dart';
-import 'features/history/domain/repositories/history_repo.dart';
-import 'features/history/domain/usecases/history_usecases.dart';
 import 'features/notification/data/data_sources/remote.dart';
 import 'features/notification/data/repositories/notification_repo_impl.dart';
 import 'features/notification/domain/repositories/notification_repo.dart';
@@ -20,6 +12,14 @@ import 'features/settings/data/datasources/remote.dart';
 import 'features/settings/data/repositories/settings_repo_impl.dart';
 import 'features/settings/domain/repositories/settings_repo.dart';
 import 'features/settings/domain/usecases/settings_usecases.dart';
+import 'features/scan/data/data_sources/remote.dart';
+import 'features/scan/data/repositories/scan_repo_impl.dart';
+import 'features/scan/domain/repositories/scan_repo.dart';
+import 'features/scan/domain/usecases/scan_usecases.dart';
+import 'features/visitors/data/data_sources/remote.dart';
+import 'features/visitors/data/repositories/visitors_repo_impl.dart';
+import 'features/visitors/domain/repositories/visitors_repo.dart';
+import 'features/visitors/domain/usecases/visitors_usecases.dart';
 
 final sl = GetIt.instance;
 
@@ -27,7 +27,9 @@ Future<void> initializeDependencies() async {
   // Existing
   sl.registerSingleton<ApiHandel>(ApiHandel.getInstance);
 
-  sl.registerSingleton<SettingsRemoteDataSource>(SettingsRemoteDataSource(sl.get()));
+  sl.registerSingleton<SettingsRemoteDataSource>(
+    SettingsRemoteDataSource(sl.get()),
+  );
   sl.registerSingleton<SettingsRepo>(SettingsRepoImpl(sl.get()));
   sl.registerSingleton<SettingsUseCases>(SettingsUseCases(sl.get()));
 
@@ -35,16 +37,19 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<UserRepo>(UserRepoImpl(authRemoteDatasource: sl.get()));
   sl.registerSingleton<UserUseCases>(UserUseCases(sl.get()));
 
-  sl.registerSingleton<NotificationRemoteDataSource>(NotificationRemoteDataSource(sl.get()),);
+  sl.registerSingleton<NotificationRemoteDataSource>(
+    NotificationRemoteDataSource(sl.get()),
+  );
   sl.registerSingleton<NotificationRepo>(NotificationRepoImpl(sl.get()));
   sl.registerSingleton<NotificationUseCases>(NotificationUseCases(sl.get()));
 
-  sl.registerSingleton<HistoryRemoteDataSource>(HistoryRemoteDataSource(sl.get()),);
-  sl.registerSingleton<HistoryRepo>(HistoryRepoImpl(sl.get()));
-  sl.registerSingleton<HistoryUsecases>(HistoryUsecases(sl.get()));
+  sl.registerSingleton<ScanRemoteDataSource>(ScanRemoteDataSource(sl.get()));
+  sl.registerSingleton<ScanRepo>(ScanRepoImpl(sl.get()));
+  sl.registerSingleton<ScanUseCases>(ScanUseCases(sl.get()));
 
-  sl.registerSingleton<ExcuseRemoteDataSource>(ExcuseRemoteDataSource(sl.get()),);
-  sl.registerSingleton<ExcuseRepo>(ExcuseRepoImpl(sl.get()));
-  sl.registerSingleton<ExcuseUsecases>(ExcuseUsecases(sl.get()));
-
+  sl.registerSingleton<VisitorsRemoteDataSource>(
+    VisitorsRemoteDataSource(sl.get()),
+  );
+  sl.registerSingleton<VisitorsRepo>(VisitorsRepoImpl(sl.get()));
+  sl.registerSingleton<VisitorsUseCases>(VisitorsUseCases(sl.get()));
 }

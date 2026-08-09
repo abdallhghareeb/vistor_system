@@ -3,7 +3,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 
 class ShimmerNotificationWidget extends StatelessWidget {
-  const ShimmerNotificationWidget({Key? key}) : super(key: key);
+  const ShimmerNotificationWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

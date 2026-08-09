@@ -41,7 +41,7 @@ class ButtonWidget extends StatelessWidget {
         width: takeSmallestWidth ? null : (width ?? 90.w),
         height: height ?? (Constants.isTablet ? 7.h :6.h),
         decoration: BoxDecoration(
-          borderRadius: directionBorderRadius ?? BorderRadius.circular(borderRadius ?? 4),
+          borderRadius: directionBorderRadius ?? BorderRadius.circular(borderRadius ?? 8),
           color: color ?? AppColor.defaultColor,
           border: borderColor == null || color == null
               ? null

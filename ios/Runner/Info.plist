@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access is required to scan visitor codes.</string>
 	<key>CFBundleDisplayName</key>
 	<string>Visitor</string>
 	<key>CFBundleExecutable</key>

@@ -34,7 +34,7 @@ class ApiHandel {
         headers: {
           "lang": lang ?? "ar",
           'Content-Type': 'application/json',
-          "Authorization": token,
+          "Authorization": "Bearer $token",
         },
       ),
     );
@@ -78,13 +78,13 @@ class ApiHandel {
         queryParameters: data,
         cancelToken: cancelToken,
       );
-      final isSuccess =
-          response.statusCode == 200 && (response.data['success'] == true);
+      final isSuccess = response.statusCode == 200 || response.statusCode == 201;
       if (isSuccess) {
         return Right(response);
       }
       print('data is $response');
       print('error1 in $path');
+      print('error1 inaaaaaaaaaaaaaa ${sharedPreferences.getString("token")}');
       print('$response');
       return Left(dioException(response));
     } on DioException catch (e) {
@@ -105,16 +105,17 @@ class ApiHandel {
 
   Future<Either<DioException, Response>> post(
     path,
-    Map<String, dynamic> data,
+    Map<String, dynamic> data, {bool isFormData = false}
   ) async {
     print(path);
     print(data);
     try {
       await reLogin(path);
       cancelToken = CancelToken();
-      Response response = await dio.post(path, data: data, cancelToken: cancelToken);
-      final isSuccess =
-          response.statusCode == 200 && (response.data['success'] == true);
+      final formData = FormData.fromMap(data);
+
+      Response response = await dio.post(path, data: isFormData ? formData :data, cancelToken: cancelToken);
+      final isSuccess = response.statusCode == 200 || response.statusCode == 201;
       if (isSuccess) {
         return Right(response);
       }
@@ -141,6 +142,7 @@ class ApiHandel {
     }
   }
 
+
   Future<Either<DioException, Response>> delete(
     path,
     Map<String, dynamic> data,
@@ -156,7 +158,7 @@ class ApiHandel {
         cancelToken: cancelToken,
       );
       final isSuccess =
-          response.statusCode == 200 && (response.data['success'] == true);
+          response.statusCode == 200 ;
       if (isSuccess) {
         return Right(response);
       }
@@ -189,12 +191,12 @@ class ApiHandel {
     if (response.data is Map) {
       final data = response.data;
 
-      if (data['message'] is Map) {
-        msg = convertMapToString(data['message']);
-      } else if (data['message'] is List) {
-        msg = data['message'].join('\n');
-      } else if (data['message'] is String) {
-        msg = data['message'];
+      if (data['Message'] is Map) {
+        msg = convertMapToString(data['Message']);
+      } else if (data['Message'] is List) {
+        msg = data['Message'].join('\n');
+      } else if (data['Message'] is String) {
+        msg = data['Message'];
       } else {
         msg = 'Server Error'; // fallback
       }
@@ -219,59 +221,11 @@ class ApiHandel {
       cancelToken = CancelToken();
       Response response = await dio.put(path, data: data, cancelToken: cancelToken);
       final isSuccess =
-          response.statusCode == 200 && (response.data['success'] == true);
+          response.statusCode == 200 ;
       if (isSuccess) {
         return Right(response);
       }
       print("aaaaaaaaaaaaaaa$response");
-      print('error1');
-      return Left(dioException(response));
-    } on DioException catch (e) {
-      debugPrint(e.toString());
-      debugPrint(e.message);
-      // print(" ON $e");
-      print('error2');
-      return Left(e.response == null ? e : dioException(e.response!));
-    } catch (e) {
-      print('error3');
-      debugPrint(e.toString());
-      print("dioException ON $e");
-      return Left(
-        DioException(
-          requestOptions: RequestOptions(baseUrl: Constants.domain, path: path),
-          message: 'Server Error',
-        ),
-      );
-    }
-  }
-
-  Future<Either<DioException, Response>> getForDomain(
-    path,
-    Map<String, dynamic> data,
-  ) async {
-    print(path);
-    try {
-      await reLogin(path);
-      cancelToken = CancelToken();
-      Response response = await Dio(
-        BaseOptions(
-          baseUrl: "https://company-management-f144801c7f48.herokuapp.com",
-          // will not throw errors
-          validateStatus: (status) => true,
-          headers: {
-            "lang": lang ?? "ar",
-            'Content-Type': 'application/json',
-            "Authorization": token,
-          },
-        ),
-      ).get(path, data: data, cancelToken: cancelToken);
-      final isSuccess =
-          response.statusCode == 200 && (response.data['success'] == true);
-      if (isSuccess) {
-        return Right(response);
-      }
-      print("aaaaaaaaaaaaaaa$response");
-      print('error${response.statusCode}');
       print('error1');
       return Left(dioException(response));
     } on DioException catch (e) {
@@ -296,14 +250,9 @@ class ApiHandel {
   Future reLogin(String url) async {
     String? token = sharedPreferences.getString('token');
     if (token != null) {
-      if (url.contains("Authentication") &&
-          !url.contains("RefreshToken") &&
-          token.isNotEmpty &&
-          JwtDecoder.isExpired(token)) {
-        await Provider.of<AuthProvider>(
-          Constants.globalContext(),
-          listen: false,
-        ).refreshToken(token: token);
+      if (!url.contains("GenrateNewToken") && token.isNotEmpty && JwtDecoder.isExpired(token)) {
+        print('sssssssssssssssss');
+        await Provider.of<AuthProvider>(Constants.globalContext(), listen: false,).refreshToken(token: token);
       }
     }
   }

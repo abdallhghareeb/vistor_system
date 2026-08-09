@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:visitor/config/text_style.dart';
+import 'package:visitor/features/auth/presentation/providers/complete_data_provider.dart';
+import 'package:visitor/features/language/presentation/provider/language_provider.dart';
 import '../../../../config/app_color.dart';
-import 'general_look_widget.dart';
-import 'greeting_widget.dart';
 import 'home_user_widget.dart';
 
 class HomeTopWidget extends StatelessWidget {
@@ -10,16 +12,27 @@ class HomeTopWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final CompleteDataProvider completeDataProvider = Provider.of(context);
+
     return Container(
-      padding: EdgeInsets.symmetric(horizontal:4.w),
-      decoration: BoxDecoration(
-          color: AppColor.defaultColor,borderRadius: BorderRadius.vertical(bottom: Radius.circular(46))
-      ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+      width: double.infinity,
+      height: 28.h,
+      padding: EdgeInsets.symmetric(horizontal: 3.5.w),
+      color: AppColor.defaultColor,
+      child: Column(
         children: [
-          HomeUserWidget(),
-          GreetingWidget(),
-          GeneralLookWidget(),
+          SizedBox(height: 2.h),
+          const HomeUserWidget(),
+          SizedBox(height: 4.h),
+          Text(completeDataProvider.totalVisitors.toString(),
+            style: TextStyleClass.headStyle(
+              color: Colors.white,
+            ).copyWith(fontSize: 26.sp, fontWeight: FontWeight.bold, height: 1),
+          ),
+          Text(
+            LanguageProvider.translate('home', 'total_visitors'),
+            style: TextStyleClass.smallStyle(color: Colors.white),
+          ),
         ],
       ),
     );

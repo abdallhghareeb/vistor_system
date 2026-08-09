@@ -1,0 +1,2 @@
+- [AVMS Kiosk API Endpoints](AVMS_Kiosk_API_Endpoints-e6d35c0d6430.md) — AVMS OpenAPI endpoints for Auth, Areas, Devices, Invitations, Reports, Users, Roles, and Settings.
+- [Visitor Management Figma Design](Visitor_Management_Figma_Design-ac0420086a5e.md) — Visitor management app Figma design archive location for implementing Flutter UI screens.

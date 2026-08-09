@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../config/text_style.dart';
 import '../../features/language/presentation/provider/language_provider.dart';
 import '../constants/constants.dart';
 import '../dialog/snack_bar.dart';
@@ -16,8 +17,8 @@ Future<dynamic> chooseImage({bool video = false}) {
       scale: 1,
       child: CupertinoAlertDialog(
         title: Text(
-          LanguageProvider.translate('inputs', 'pick'),
-          style: const TextStyle(color: Colors.black),
+          LanguageProvider.translate('global', 'pick'),
+          style: TextStyleClass.normalStyle(color: Colors.black),
         ),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
@@ -37,10 +38,9 @@ Future<dynamic> chooseImage({bool video = false}) {
                 // Navigator.pop(context,img);
               }
             },
-            // child: Text('cancel',style: TextStyle(color: textColor()),),
             child: Text(
-              LanguageProvider.translate('inputs', 'camera'),
-              style: const TextStyle(color: Colors.black),
+              LanguageProvider.translate('global', 'camera'),
+              style: TextStyleClass.normalStyle(color: Colors.black),
             ),
           ),
           CupertinoDialogAction(
@@ -54,8 +54,8 @@ Future<dynamic> chooseImage({bool video = false}) {
               }
             },
             child: Text(
-              LanguageProvider.translate('inputs', 'photo'),
-              style: const TextStyle(color: Colors.black),
+              LanguageProvider.translate('global', 'photo'),
+              style: TextStyleClass.normalStyle(color: Colors.black),
             ),
           ),
         ],
@@ -72,8 +72,8 @@ Future<dynamic> chooseImageMulti(context, {bool video = false}) {
       scale: 1,
       child: CupertinoAlertDialog(
         title: Text(
-          LanguageProvider.translate('inputs', 'pick'),
-          style: const TextStyle(color: Colors.black),
+          LanguageProvider.translate('global', 'pick'),
+          style: TextStyleClass.normalStyle(color: Colors.black),
         ),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
@@ -89,10 +89,9 @@ Future<dynamic> chooseImageMulti(context, {bool video = false}) {
               // await delay(100);
               // Navigator.pop(context,img);
             },
-            // child: Text('cancel',style: TextStyle(color: textColor()),),
             child: Text(
-              LanguageProvider.translate('inputs', 'camera'),
-              style: const TextStyle(color: Colors.black),
+              LanguageProvider.translate('global', 'camera'),
+              style: TextStyleClass.normalStyle(color: Colors.black),
             ),
           ),
           CupertinoDialogAction(
@@ -102,8 +101,8 @@ Future<dynamic> chooseImageMulti(context, {bool video = false}) {
               Navigator.pop(context, img);
             },
             child: Text(
-              LanguageProvider.translate('inputs', 'photo'),
-              style: const TextStyle(color: Colors.black),
+              LanguageProvider.translate('global', 'photo'),
+              style: TextStyleClass.normalStyle(color: Colors.black),
             ),
           ),
         ],
@@ -179,7 +178,10 @@ Future<XFile?> pickImage(context, int type) async {
   } else {
     final ImagePicker picker = ImagePicker();
     var status = await Permission.mediaLibrary.status;
-    return await picker.pickImage(source: ImageSource.gallery, imageQuality: 100);
+    return await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 100,
+    );
   }
 }
 

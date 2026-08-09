@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import '../../domain/repositories/user_repo.dart';
 import '../datasources/remote.dart';
+import '../models/tab_model.dart';
 import '../models/user_model.dart';
 
 class UserRepoImpl implements UserRepo {
@@ -57,12 +58,18 @@ class UserRepoImpl implements UserRepo {
     return await authRemoteDatasource.updateProfile(data);
   }
   @override
-  Future<Either<DioException, String>> getDomain(Map<String, dynamic> data) async {
-    return await authRemoteDatasource.getDomain(data);
-  }
-  @override
   Future<Either<DioException, bool>> deleteProfile(Map<String, dynamic> data) async {
     return await authRemoteDatasource.deleteProfile(data);
+  }
+
+  @override
+  Future<Either<DioException, TabModel>> getTabsInfo(Map<String, dynamic> data) async {
+    return await authRemoteDatasource.getTabsInfo(data);
+  }
+
+  @override
+  Future<Either<DioException, bool>> changePassword(Map<String, dynamic> data) async {
+    return await authRemoteDatasource.changePassword(data);
   }
 
 }

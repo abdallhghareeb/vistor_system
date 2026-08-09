@@ -6,7 +6,6 @@ import '../../../../config/text_style.dart';
 import '../../../../core/widget/button_widget.dart';
 import '../../../../core/widget/list_text_field.dart';
 import '../../../language/presentation/provider/language_provider.dart';
-import '../../../splash/presentation/provider/select_domain_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/reset_password_provider.dart';
 
@@ -22,27 +21,32 @@ class LoginPage extends StatelessWidget {
           child: Padding(padding: EdgeInsets.symmetric(horizontal: 6.w),
             child: Column(
               children: [
-                Column(
+                Column(crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 18.h),
+                    SizedBox(height: 15.h),
                     Text(
                       LanguageProvider.translate("auth", "login",),
-                      style: TextStyleClass.semiHeadStyle(color: AppColor.defaultBlackColor).copyWith(fontWeight: FontWeight.w400),
+                      style: TextStyleClass.semiHeadStyle(color: AppColor.defaultBlackColor).copyWith(fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 3.h),
+                    SizedBox(height: 1.5.h),
+                    Text(
+                      LanguageProvider.translate("auth", "login_des",),
+                      style: TextStyleClass.normalStyle(color: AppColor.defaultGrey),
+                    ),
+                    SizedBox(height: 2.h),
                     Consumer<AuthProvider>(builder: (context, value, child) =>
                         ListTextFieldWidget(inputs: authProvider.loginInputs, borderRadius: 4,),
                     ),
                     SizedBox(height: 1.h),
                     InkWell(
                       onTap: (){
-                        Provider.of<ResetPasswordProvider>(context,listen: false).showForgetPasswordDialog();
+                        Provider.of<ResetPasswordProvider>(context,listen: false).goToForgetPasswordPage();
                       },
                       child: Row(mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
                             LanguageProvider.translate("auth", "forget_password",),
-                            style: TextStyleClass.smallStyle(color: AppColor.labelTextColor).copyWith(fontWeight: FontWeight.w500),
+                            style: TextStyleClass.smallStyle(color: AppColor.defaultColor).copyWith(fontWeight: FontWeight.w500),
                           ),
                         ],
                       ),
@@ -56,35 +60,26 @@ class LoginPage extends StatelessWidget {
                         }
                       },
                     ),
-                    SizedBox(height: 4.h),
+                    SizedBox(height: 3.h),
                     InkWell(
                       onTap: (){
                         authProvider.goToRegisterPage();
                       },
-                      child: RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "${LanguageProvider.translate("auth", "not_have_account")} ",
-                              style: TextStyleClass.normalStyle(color: AppColor.defaultBlackColor,),
-                            ),
-                            TextSpan(
-                              text: LanguageProvider.translate("auth", "sign_up"),
-                              style: TextStyleClass.normalStyle(color: AppColor.defaultColor,).copyWith(fontWeight: FontWeight.w600),
-                            ),
-                          ],
+                      child: Center(
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "${LanguageProvider.translate("auth", "not_have_account")} ",
+                                style: TextStyleClass.smallStyle(color: AppColor.defaultBlackColor,).copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              TextSpan(
+                                text: LanguageProvider.translate("auth", "sign_up"),
+                                style: TextStyleClass.smallStyle(color: AppColor.defaultColor,).copyWith(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    InkWell(
-                      onTap: (){
-                        Provider.of<SelectDomainProvider>(context,listen: false).removeDomain();
-                      },
-                      child: Text(
-                        LanguageProvider.translate("auth", "select_domain",),
-                        style: TextStyleClass.normalStyle(color: AppColor.defaultColor)
-                            .copyWith(fontWeight: FontWeight.bold,fontSize: 12.sp),
                       ),
                     ),
                     SizedBox(height: 2.h),

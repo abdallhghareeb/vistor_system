@@ -11,8 +11,8 @@ import 'dart:ui' as ui;
 
 import '../../domain/use_cases/translate_text.dart';
 class LanguageProvider extends ChangeNotifier {
-  late Locale
-  language; // use this var when control state of language widget then use it for change language
+  late Locale language;
+  // use this var when control state of language widget then use it for change language
   Locale _appLocale = const Locale('ar');
   static const List<Locale> languages = [Locale('ar', ''), Locale("en", ""),];
   Locale get appLocal => _appLocale;

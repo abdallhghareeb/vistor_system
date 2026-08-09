@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import '../entities/zone_entity.dart';
+import '../entities/version_entity.dart';
 
 abstract class SettingsRepo {
-  Future<Either<DioException, List<ZoneEntity>>> getZones();
+  Future<Either<DioException, VersionEntity>> mobileVersion();
 }

@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "792724814259",
-    "project_id": "vistor-cf6da",
-    "storage_bucket": "vistor-cf6da.firebasestorage.app"
+    "project_number": "134059576531",
+    "project_id": "avms-10cbc",
+    "storage_bucket": "avms-10cbc.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:792724814259:android:9979832293d70c804ab3c6",
+        "mobilesdk_app_id": "1:134059576531:android:3a7077e71c65073b109826",
         "android_client_info": {
           "package_name": "com.app.visitor"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDR0KplzlLuxJmu1nzkZHIMIDsir6b2byQ"
+          "current_key": "AIzaSyB6NWFnmjNt4F2WuMTGitZHmLCmuvcf7i4"
         }
       ],
       "services": {

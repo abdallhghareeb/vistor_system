@@ -49,6 +49,7 @@ class CustomOTPFieldWidget extends StatelessWidget {
           animationDuration: const Duration(milliseconds: 300),
           // backgroundColor: Colors.white,
           enableActiveFill: true,
+          keyboardType: TextInputType.text,
           controller: otpProvider.otpController,
           onCompleted: (v) {},
         ),

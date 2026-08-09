@@ -1,61 +1,68 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+
 import '../../../../config/text_style.dart';
-import '../../../../core/helper_function/convert.dart';
-import '../../domain/entities/notification_entity.dart';
-import '../provider/notification_provider.dart';
+
+enum NotificationTone { info, warning, success }
 
 class NotificationWidget extends StatelessWidget {
-  const NotificationWidget({super.key, required this.notificationEntity});
-  final NotificationEntity notificationEntity;
+  final String message;
+  final String time;
+  final NotificationTone tone;
+  final VoidCallback? onTap;
+
+  const NotificationWidget({
+    required this.message,
+    required this.time,
+    required this.tone,
+    this.onTap,
+    super.key,
+  });
+
   @override
   Widget build(BuildContext context) {
+    final color = switch (tone) {
+      NotificationTone.info => const Color(0xff1473A7),
+      NotificationTone.warning => const Color(0xffF04444),
+      NotificationTone.success => const Color(0xff12A85A),
+    };
+    final icon = switch (tone) {
+      NotificationTone.info => Icons.info_outline_rounded,
+      NotificationTone.warning => Icons.warning_amber_rounded,
+      NotificationTone.success => Icons.check_circle_outline_rounded,
+    };
+
     return InkWell(
-      onTap: (){
-        Provider.of<NotificationProvider>(context,listen: false).
-        goToNotificationDetailsPage(title: notificationEntity.title, data: notificationEntity.description,id: notificationEntity.id);
-      },
-      child: Container(
-        width: 100.w,
-        color: notificationEntity.isRead? null:Color(0xffE9EFFD),
-        padding: EdgeInsets.symmetric(horizontal: 4.w,vertical: 1.5.h),
-        child: Column(
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 1.h),
+        child: Row(
           children: [
-            Row(
-              children: [
-                // CircleAvatar(
-                //   radius: 6.w,
-                //   backgroundImage: CachedNetworkImageProvider(userImage),
-                // ),
-                // Container(
-                //   decoration: BoxDecoration(
-                //     color: Colors.white,
-                //     borderRadius: BorderRadius.circular(6),
-                //   ),
-                //   padding: EdgeInsets.all(6),
-                //   child: Image.asset(Images.breezeLogo,width: 10.w,height: 10.w,color: AppColor.defaultColor,),
-                // ),
-                // SizedBox(width: 3.w,),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(child: Text(notificationEntity.title,maxLines: 1,style: TextStyleClass.smallStyle(),)),
-                          SizedBox(width: 3.w,),
-                          Text(notificationEntity.createdAt,style: TextStyleClass.captionStyle(),maxLines: 1,),
-                        ],
-                      ),
-                      SizedBox(height: 0.5.h,),
-                      Text(notificationEntity.description,style: TextStyleClass.smallStyle(color: Colors.black54),maxLines: 1,overflow: TextOverflow.ellipsis,),
-                    ],
-                  ),
-                ),
-              ],
+            Container(
+              width: 11.w,
+              height: 11.w,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(2.5.w),
+              ),
+              child: Icon(icon, color: color, size: 5.5.w),
             ),
-            // Divider(color: Colors.grey.shade400,),
+            SizedBox(width: 3.w),
+            Expanded(
+              child: Text(
+                message,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyleClass.captionStyle(
+                  color: const Color(0xff66717C),
+                ).copyWith(height: 1.25),
+              ),
+            ),
+            SizedBox(width: 2.w),
+            Text(
+              time,
+              style: TextStyleClass.labelStyle(color: const Color(0xffBBC1C6)),
+            ),
           ],
         ),
       ),

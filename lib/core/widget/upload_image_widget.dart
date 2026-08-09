@@ -6,10 +6,7 @@ import '../../config/app_color.dart';
 import '../../config/text_style.dart';
 import '../../features/auth/presentation/providers/complete_data_provider.dart';
 import '../../features/language/presentation/provider/language_provider.dart';
-import '../constants/constants.dart';
-import '../constants/images.dart';
 import '../helper_function/image.dart';
-import 'svg_widget.dart';
 
 class UploadImageWidget extends StatelessWidget {
   const UploadImageWidget({super.key, required this.fromAuth});
@@ -38,37 +35,23 @@ class UploadImageWidget extends StatelessWidget {
                     )
                   ),
                 ),
-                PositionedDirectional(
-                  bottom: 0,
-                  end: 0,
-                  child: InkWell(
-                      onTap: () async {
-                        FocusScope.of(context).unfocus();
-                        XFile? image = await chooseImage();
-                        if (image != null) {
-                          authProvider.updateImage(image);
-                        }
-                      },
-                      child:  Container(padding: EdgeInsets.all(2.w),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,color: Color(0xffF0F1F2)
-                        ),
-                          child: SvgWidget(svg: Images.edit,width:Constants.isTablet?5.w: 7.w,))),
-                ),
               ],
             ),
           ),
           SizedBox(height: 0.5.h),
-          Text(
-            LanguageProvider.translate('home', 'guest'),
-            style: TextStyleClass.normalStyle(color: AppColor.defaultColor),
+          InkWell(
+            onTap: () async {
+              FocusScope.of(context).unfocus();
+              XFile? image = await chooseImage();
+              if (image != null) {
+                authProvider.updateImage(image);
+              }
+            },
+            child: Text(LanguageProvider.translate('auth', 'upload_image'),
+              style: TextStyleClass.normalStyle(color: AppColor.defaultColor),
+            ),
           ),
-
-          Text(
-            LanguageProvider.translate('settings', 'id').replaceFirst("*id*", "id"),
-            style: TextStyleClass.normalStyle(color: Color(0xff6B7280)),
-          ),
-        ],
+        ]
       ),
     );
   }

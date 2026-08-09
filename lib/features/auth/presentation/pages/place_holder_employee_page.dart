@@ -17,7 +17,7 @@ class PlaceHolderEmployeePage extends StatelessWidget {
       child: Scaffold(backgroundColor: AppColor.backgroundColor,
         appBar: AppBar(),
         body: SingleChildScrollView(
-          child: Form(key: authProvider.formKey,
+          child: Form(
             child: Padding(padding: EdgeInsets.symmetric(horizontal: 5.w),
               child: Column(crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,

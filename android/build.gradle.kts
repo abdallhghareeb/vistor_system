@@ -31,6 +31,18 @@ rootProject.layout.buildDirectory.value(newBuildDir)
 subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
+
+    // CameraX 1.5.x exposes CallbackToFutureAdapter in its compile API while
+    // declaring concurrent-futures as a runtime dependency. Add it to the
+    // camera plugin module itself so javac can resolve the CameraX API.
+    if (name == "camera_android_camerax") {
+        pluginManager.withPlugin("com.android.library") {
+            dependencies.add(
+                "implementation",
+                "androidx.concurrent:concurrent-futures:1.2.0",
+            )
+        }
+    }
 }
 subprojects {
     project.evaluationDependsOn(":app")

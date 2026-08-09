@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import '../entities/tab_entity.dart';
 import '../entities/user_entity.dart';
 import '../repositories/user_repo.dart';
 
@@ -44,13 +45,16 @@ class UserUseCases{
     return await  userRepo.resetPassword(data);
   }
 
-  Future<Either<DioException, String>> getDomain(Map<String, dynamic> data) async{
-    return await  userRepo.getDomain(data);
-  }
-
   Future<Either<DioException, bool>> deleteProfile(Map<String, dynamic> data) async{
     return await  userRepo.deleteProfile(data);
   }
 
+  Future<Either<DioException, TabEntity>> getTabsInfo(Map<String, dynamic> data) async{
+    return await  userRepo.getTabsInfo(data);
+  }
+
+  Future<Either<DioException, bool>> changePassword(Map<String, dynamic> data) async{
+    return await  userRepo.changePassword(data);
+  }
 
 }

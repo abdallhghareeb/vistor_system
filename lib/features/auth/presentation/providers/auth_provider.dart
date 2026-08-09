@@ -16,8 +16,8 @@ import '../../../../core/helper_function/navigation.dart';
 import '../../../../core/helper_function/prefs.dart';
 import '../../../../core/helper_function/text_form_field_validation.dart';
 import '../../../../core/models/text_field_model.dart';
-import '../../../history/presentation/provider/check_provider.dart';
 import '../../../language/presentation/provider/language_provider.dart';
+import '../../../notification/presentation/provider/notification_provider.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/usecases/user_usecases.dart';
 import '../pages/login_page.dart';
@@ -39,48 +39,37 @@ class AuthProvider extends ChangeNotifier {
   }
 
   static bool isLogin() {
-    return sharedPreferences.getString('token') !=null;
+    return sharedPreferences.getString('token') != null;
   }
 
-  Future getProfile({bool fromSplash=false}) async {
+  Future getProfile({bool fromSplash = false}) async {
     Map<String, dynamic> data = {};
-    Either<DioException, UserEntity> login = await userUseCases.getProfile(data);
-    login.fold((l) {
-      showToast(l.response?.data['error']??l.message ??"Something went wrong");
-      goToLoginPage();
-    }, (r) async {
-      Provider.of<CompleteDataProvider>(Constants.globalContext(),listen: false).
-      successLogin(userEntity: r,fromSplash: fromSplash);
-      if(didCheckIn()){
-        Provider.of<CheckProvider>(Constants.globalContext(),listen: false).startTimer();
-      }
-      notifyListeners();
-    });
+    Either<DioException, UserEntity> login = await userUseCases.getProfile(
+      data,
+    );
+    login.fold(
+      (l) {
+        showToast(l.message ?? LanguageProvider.translate('error', 'error'));
+        goToLoginPage();
+      },
+      (r) async {
+        Provider.of<CompleteDataProvider>(Constants.globalContext(), listen: false,)
+            .successLogin(userEntity: r, fromSplash: fromSplash);
+        notifyListeners();
+      },
+    );
   }
 
   bool isGuest() {
     return userEntity == null;
   }
 
-  bool didCheckIn(){
-    DateTime checkInTime = DateTime.parse(userEntity?.attendance?.checkIn?.timestamp??"${DateTime.now()}");
-    DateTime checkOutTime = DateTime.parse(userEntity?.attendance?.checkOut?.timestamp??"${DateTime.now()}");
-    bool checkIn = checkInTime.isBefore(checkOutTime);
-
-    if(userEntity?.attendance ==null){
-      return false;
-    }else if(userEntity?.attendance?.checkOut == null){
-    return true;
-    }else if(checkIn){
-      return false;
-    } else{
-      return true;
-    }
-  }
-
   void guestButton() {
     sharedPreferences.setBool('intro', true);
-    Provider.of<AuthProvider>(Constants.globalContext(), listen: false).goToLoginPage();
+    Provider.of<AuthProvider>(
+      Constants.globalContext(),
+      listen: false,
+    ).goToLoginPage();
   }
 
   List<TextFieldModel> loginInputs = [];
@@ -115,78 +104,93 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future refreshToken({String? token}) async {
-    Map<String ,dynamic> data={};
+    Map<String, dynamic> data = {};
     data['token'] = token;
-    Either<DioException, String> refreshToken = await userUseCases.refreshToken(data);
-    refreshToken.fold((l) {
-    }, (r) async {
+    Either<DioException, String> refreshToken = await userUseCases.refreshToken(
+      data,
+    );
+    refreshToken.fold((l) {}, (r) async {
       userEntity?.token = r;
       ApiHandel.getInstance.updateHeader(r);
       sharedPreferences.setString('token', r);
     });
   }
 
-  Future loginButton({bool fromSplash = false, bool fromJWT = false,}) async {
+  Future loginButton({bool fromSplash = false, bool fromJWT = false}) async {
     Map<String, dynamic> data = {};
-    if(sharedPreferences.getString("phone") !=null) {
-      loginInputs.firstWhere((element) => element.key == 'phone').controller =
-          TextEditingController(text: sharedPreferences.getString("phone"));
-    }
+    // if(sharedPreferences.getString("phone") !=null) {
+    //   loginInputs.firstWhere((element) => element.key == 'phone').controller =
+    //       TextEditingController(text: sharedPreferences.getString("phone"));
+    // }
     for (var element in loginInputs) {
-      data[element.key??""] = element.controller.text;
+      data[element.key ?? ""] = element.controller.text;
     }
     if (!fromSplash) loading();
     Either<DioException, UserEntity> login = await userUseCases.login(data);
-    login.fold((l) {
-      if (!fromSplash) navPop();
-      if (fromSplash) {
-        sharedPreferences.remove("phone");
-        // navPARU(LoginPage());
-      } else {
-        showToast(l.message!);
-      }
-    }, (r) async {
-      Provider.of<CompleteDataProvider>(Constants.globalContext(),listen: false).
-      successLogin(userEntity: r, fromSplash: fromSplash);
-    });
+    login.fold(
+      (l) {
+        if (!fromSplash) navPop();
+        if (fromSplash) {
+          sharedPreferences.remove("phone");
+          // navPARU(LoginPage());
+        } else {
+          showToast(l.response?.data['message']??l.message);
+        }
+      },
+      (r) async {
+        Provider.of<CompleteDataProvider>(
+          Constants.globalContext(),
+          listen: false,
+        ).successLogin(userEntity: r, fromSplash: fromSplash);
+      },
+    );
   }
 
   void logout() async {
-    if(isGuest()){
+    if (isGuest()) {
       successLogout();
-    }else{
+    } else {
       Map<String, dynamic> data = {};
       // AccessTokenFireBase accessTokenGetter = AccessTokenFireBase();
       // String token = await accessTokenGetter.getAccessToken();
       token = await FirebaseMessaging.instance.getToken() ?? "123";
       data['token'] = token;
       userUseCases.logout(data);
+      Provider.of<NotificationProvider>(Constants.globalContext(), listen: false,).unregisterDevice();
       successLogout();
     }
   }
 
   void deleteAccount() async {
-    Either<DioException, bool> login = await userUseCases.deleteProfile({});
+
+    Either<DioException, bool> login = await userUseCases.deleteProfile({'id': userEntity?.userId});
     login.fold((l) {
-      showToast(l.message!);
+        showToast(l.message!);
     }, (r) async {
-      successLogout();
-      notifyListeners();
-    });
+        successLogout();
+        notifyListeners();
+      },
+    );
   }
 
   void confirmDeleteAccount() {
-    confirmDialog(LanguageProvider.translate('home', "delete_account"),
-        LanguageProvider.translate('buttons', "delete_account"), () {
-          deleteAccount();
-        });
+    confirmDialog(
+      LanguageProvider.translate('settings', "delete_account_dialog"),
+      LanguageProvider.translate('buttons', "delete_account"),
+      () {
+        deleteAccount();
+      },
+    );
   }
 
   void confirmLogoutAccount() {
-    confirmDialog(LanguageProvider.translate('home', "logout"),
-        LanguageProvider.translate('buttons', "logout"), () {
-          logout();
-        });
+    confirmDialog(
+      LanguageProvider.translate('settings', "logout_dialog"),
+      LanguageProvider.translate('buttons', "logout"),
+      () {
+        logout();
+      },
+    );
   }
 
   void goToLoginPage() async {
@@ -194,26 +198,34 @@ class AuthProvider extends ChangeNotifier {
     prefs.setBool('onBoarding', true);
     loginInputs = [
       TextFieldModel(
-        key: "emailOrUserName",
+        key: "username",
         controller: TextEditingController(),
-        textInputType: TextInputType.emailAddress,
+        textInputType: TextInputType.text,
         validator: (value) => validateEmailORUser(value),
-        label: "emailOrUserName",
-        next: true,),
+        label: "username",
+        hint: "login_username",
+        next: true,
+      ),
       TextFieldModel(
         key: "password",
         controller: TextEditingController(),
         textInputType: TextInputType.visiblePassword,
         validator: (value) => validatePassword(value),
         label: "password",
-        onShownTap : (){
-          loginInputs.firstWhere((element) => element.key=="password",).obscureText=
-          !loginInputs.firstWhere((element) => element.key=="password",).obscureText;
+        hint: "login_pass",
+        onShownTap: () {
+          loginInputs
+              .firstWhere((element) => element.key == "password")
+              .obscureText = !loginInputs
+              .firstWhere((element) => element.key == "password")
+              .obscureText;
           notifyListeners();
-          },
+        },
         obscureText: true,
-        next: false,),
+        next: false,
+      ),
     ];
+    sharedPreferences.remove('token');
     navPARU(const LoginPage());
   }
 
@@ -222,64 +234,72 @@ class AuthProvider extends ChangeNotifier {
     prefs.setBool('onBoarding', true);
     registerInputs = [
       TextFieldModel(
-        key: "email",
-        controller: TextEditingController(),
-        textInputType: TextInputType.emailAddress,
-        validator: (value) => validatePhone(value),
-        label: "email",
-        next: true,),
-      TextFieldModel(
-        key: "username",
+        key: "Username",
         controller: TextEditingController(),
         textInputType: TextInputType.text,
         validator: (value) => validateName(value),
         label: "username",
-        next: true,),
+        next: true,
+      ),
+
       TextFieldModel(
-        key: "employeeCode",
+        key: "Email",
         controller: TextEditingController(),
-        textInputType: TextInputType.text,
-        validator: (value) => null,
-        label: "employeeId",
-        next: true,),
+        textInputType: TextInputType.emailAddress,
+        validator: (value) => validateEmail(value),
+        label: "email",
+        next: true,
+      ),
+      // TextFieldModel(
+      //   key: "PhoneNumber",
+      //   controller: TextEditingController(),
+      //   textInputType: TextInputType.text,
+      //   validator: (value) => validatePhone(value),
+      //   label: "phone",
+      //   next: true,),
+      // TextFieldModel(
+      //   key: "fullName",
+      //   controller: TextEditingController(),
+      //   textInputType: TextInputType.text,
+      //   validator: (value) => validateName(value),
+      //   label: "full_name",
+      //   next: true,),
       TextFieldModel(
-        key: "fullName",
-        controller: TextEditingController(),
-        textInputType: TextInputType.text,
-        validator: (value) => validateName(value),
-        label: "full_name",
-        next: true,),
-      TextFieldModel(
-        key: "mobileNumber",
+        key: "PhoneNumber",
         controller: TextEditingController(),
         textInputType: TextInputType.phone,
-        validator: (value) => validateName(value),
+        validator: (value) => validatePhone(value),
         label: "phone",
-        next: true,),
+        next: true,
+      ),
       TextFieldModel(
         key: "password",
         controller: TextEditingController(),
         textInputType: TextInputType.visiblePassword,
         validator: (value) => validatePassword(value),
         label: "password",
-        onShownTap : (){
-          registerInputs.firstWhere((element) => element.key=="password",).obscureText=
-          !registerInputs.firstWhere((element) => element.key=="password",).obscureText;
+        onShownTap: () {
+          registerInputs
+              .firstWhere((element) => element.key == "password").obscureText = !registerInputs
+              .firstWhere((element) => element.key == "password").obscureText;
           notifyListeners();
         },
-        next: true,),
+        next: true,
+      ),
       TextFieldModel(
-        key: "confirm_password",
+        key: "ConfirmPassword",
         controller: TextEditingController(),
         textInputType: TextInputType.visiblePassword,
         validator: (value) => validatePassword(value),
         label: "confirm_password",
-        onShownTap : (){
-          registerInputs.firstWhere((element) => element.key=="confirm_password",).obscureText=
-          !registerInputs.firstWhere((element) => element.key=="confirm_password",).obscureText;
+        onShownTap: () {
+          registerInputs
+              .firstWhere((element) => element.key == "ConfirmPassword").obscureText = !registerInputs
+              .firstWhere((element) => element.key == "ConfirmPassword").obscureText;
           notifyListeners();
         },
-        next: false,),
+        next: false,
+      ),
     ];
     navP(const RegisterPage());
   }
@@ -290,24 +310,35 @@ class AuthProvider extends ChangeNotifier {
     goToLoginPage();
   }
 
-  String code= "+20";
+  String code = "+20";
   Future registerButton() async {
     Map<String, dynamic> data = {};
     for (var element in registerInputs) {
-      data[element.key??""] = element.controller.text;
+      data[element.key ?? ""] = element.controller.text;
     }
-    data.remove("confirm_password");
-    data['mobileNumber'] = "$code${data['mobileNumber']}";
+    // data.remove("confirm_password");
+    CompleteDataProvider completeDataProvider =Provider.of(Constants.globalContext(),listen: false);
+    if(completeDataProvider.image != null){
+      data['Image'] =await MultipartFile.fromFile(completeDataProvider.image!.path);
+
+    }
+    data['Roles'] = "Operator";
     loading();
     Either<DioException, UserEntity> login = await userUseCases.register(data);
-    login.fold((l) {
-      // navPop();
-      showToast(l.message??"");
-    }, (r) async {
-      successDialog(then: (){
-        goToLoginPage();
-      });
-    });
+    navPop();
+    login.fold(
+      (l) {
+        showToast(l.response?.data['error'] ?? l.response?.data['message'] ??
+            l.message ?? LanguageProvider.translate('error', 'error'),);
+      },
+      (r) async {
+        successDialog(
+          then: () {
+            goToLoginPage();
+          },
+        );
+      },
+    );
   }
 
   void submitRegisterForm() {
@@ -322,8 +353,11 @@ class AuthProvider extends ChangeNotifier {
       }
     }
 
-    if(registerInputs[5].controller.text
-        != registerInputs.last.controller.text){
+    if (registerInputs
+            .firstWhere((element) => element.key == "password")
+            .controller
+            .text !=
+        registerInputs.last.controller.text) {
       showToast(LanguageProvider.translate("validation", "password_not_match"));
     }
 
@@ -332,36 +366,4 @@ class AuthProvider extends ChangeNotifier {
       errorSnackBar(title: nameError.trim());
     }
   }
-
-  bool isBeforeTime(){
-    String timeFromBackend = userEntity?.requiredWorkTime??"00:00:00";
-    String workedTime = "00:00:00";
-    if(userEntity?.todayWorkTime!=null){
-      workedTime = userEntity?.todayWorkTime?.workTime??"00:00:00";
-    }
-    List<String> workedParts = workedTime.split(':');
-    Duration limitWorkDuration = Duration(
-      hours: int.parse(workedParts[0]),
-      minutes: int.parse(workedParts[1]),
-      seconds: int.parse(workedParts[2]),
-    );
-
-    List<String> parts = timeFromBackend.split(':');
-    Duration limitDuration = Duration(
-      hours: int.parse(parts[0]),
-      minutes: int.parse(parts[1]),
-      seconds: int.parse(parts[2]),
-    );
-
-    DateTime start = DateTime.parse(userEntity?.attendance?.checkIn?.timestamp ??"${DateTime.now()}");
-    DateTime end =DateTime.parse(userEntity?.attendance?.checkOut?.timestamp ??"${DateTime.now()}");
-
-    Duration diff = end.difference(start);
-    if ((diff+limitWorkDuration) < limitDuration) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
 }

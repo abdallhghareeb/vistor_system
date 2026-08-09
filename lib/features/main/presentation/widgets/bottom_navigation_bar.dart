@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+
 import '../../../../config/app_color.dart';
 import '../../../../config/text_style.dart';
 import '../../../../core/widget/svg_widget.dart';
@@ -12,48 +13,59 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    MainProvider main = Provider.of(context, listen: true);
+    final main = context.watch<MainProvider>();
 
-    return Stack(clipBehavior: Clip.none,alignment: Alignment.center,
-      children: [
-        Container(
-          decoration:  BoxDecoration(
-            color: Colors.white,
+    return Container(
+      padding: EdgeInsets.only(top: 1.h, bottom: 0.8.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(main.items.length, (index) {
-              return InkWell(
-                onTap: () {
-                  main.setIndex(index);
-                },
-                child: SizedBox(
-                  width:  24.w,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    key: ValueKey<int>(index),
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(height: 1.h),
-                      SvgWidget(
-                            svg:index == main.index? main.items[index]['active_image']: main.items[index]['image'],
-                            fit: BoxFit.cover, width: 6.w,color: AppColor.defaultColor,
-                        ),
-                      SizedBox(height: 0.5.h),
-                      Text(LanguageProvider.translate("home", main.items[index]['title']),
-                        style: TextStyleClass.normalStyle(
-                            color:main.index==index?AppColor.defaultColor:Color(0xff808080)  ),
-                      ),
-                      SizedBox(height: 1.h),
-
-                    ],
+        ],
+      ),
+      child: Row(
+        children: List.generate(main.items.length, (index) {
+          final selected = main.index == index;
+          return Expanded(
+            child: InkWell(
+              onTap: () => main.setIndex(index),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgWidget(
+                    svg: main.items[index]['image'],
+                    width: 5.5.w,
+                    color: selected
+                        ? AppColor.defaultColor
+                        : const Color(0xff6F7A85),
                   ),
-                ),
-              );
-            }),
-          ),
-        ),
-      ],
+                  SizedBox(height: 0.5.h),
+                  Text(
+                    LanguageProvider.translate(
+                      'home',
+                      main.items[index]['title'],
+                    ),
+                    style:
+                        TextStyleClass.normalStyle(
+                          color: selected
+                              ? AppColor.defaultColor
+                              : const Color(0xff6F7A85),
+                        ).copyWith(
+                          fontWeight: selected
+                              ? FontWeight.w500
+                              : FontWeight.w400,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+      ),
     );
   }
 }

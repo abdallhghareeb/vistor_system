@@ -1,9 +1,6 @@
 import 'package:flutter/services.dart';
-
 import '../../../../core/constants/images.dart';
 import '../../../../core/helper_function/helper_function.dart';
-import '../../../settings/presentation/provider/permissions_provider.dart';
-import '../provider/connection_provider.dart';
 import '../provider/splash_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';

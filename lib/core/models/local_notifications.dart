@@ -31,7 +31,7 @@ class NotificationLocalClass {
   }
   static Future init({bool initScheduled = false})async{
     final settings = InitializationSettings(
-      android: const AndroidInitializationSettings('logo'),
+      android: const AndroidInitializationSettings('ic_launcher'),
       iOS: DarwinInitializationSettings(
           requestSoundPermission: true,
           requestBadgePermission: true,

@@ -19,8 +19,8 @@ class Images {
   static const String history = 'assets/images/home/history.svg';
   static const String home = 'assets/images/home/home.svg';
   static const String activeHome = 'assets/images/home/active_home.svg';
-  static const String location = 'assets/images/home/location.svg';
-  static const String activeLocation = 'assets/images/home/active_location.svg';
+  static const String messages = 'assets/images/home/messages.svg';
+  static const String visitors = 'assets/images/home/visitors.svg';
   static const String nfc = 'assets/images/home/nfc.svg';
   static const String notificationsImage = 'assets/images/home/notifications_image.png';
   static const String notifications = 'assets/images/home/notifications.svg';

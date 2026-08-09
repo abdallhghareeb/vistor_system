@@ -14,7 +14,7 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage>  {
+class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
@@ -29,8 +29,6 @@ class _MainPageState extends State<MainPage>  {
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     var model = Provider.of<MainProvider>(context);
@@ -44,21 +42,23 @@ class _MainPageState extends State<MainPage>  {
       },
       child: SafeArea(
         child: Scaffold(
-            body: Column(
-              children: [
-                // Expanded(
-                //   child: SlideTransitionWidget(child: Container(key: ValueKey(model.index),
-                //       child: model.bottomWidget[model.index])),
-                // ),
-                Expanded(
-                  child: Container(key: ValueKey(model.index),
-                      child: model.bottomWidget[model.index]),
+          body: Column(
+            children: [
+              // Expanded(
+              //   child: SlideTransitionWidget(child: Container(key: ValueKey(model.index),
+              //       child: model.bottomWidget[model.index])),
+              // ),
+              Expanded(
+                child: Container(
+                  key: ValueKey(model.index),
+                  child: model.bottomWidget[model.index],
                 ),
+              ),
 
-                CustomBottomNavigationBar(),
-              ],
-            ),
-            ),
+              CustomBottomNavigationBar(),
+            ],
+          ),
+        ),
       ),
     );
   }

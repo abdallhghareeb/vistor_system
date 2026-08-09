@@ -31,17 +31,17 @@ String? validatePassword(String? value) {
     return LanguageProvider.translate("validation", "empty_password");
   }
 
-  if (value.length < 8) {
+  if (value.length < 6) {
     return LanguageProvider.translate("validation", "password_min_length");
   }
 
-  if (!RegExp(r'[A-Z]').hasMatch(value)) {
-    return LanguageProvider.translate("validation", "password_uppercase");
-  }
-
-  if (!RegExp(r'[a-z]').hasMatch(value)) {
-    return LanguageProvider.translate("validation", "password_lowercase");
-  }
+  // if (!RegExp(r'[A-Z]').hasMatch(value)) {
+  //   return LanguageProvider.translate("validation", "password_uppercase");
+  // }
+  //
+  // if (!RegExp(r'[a-z]').hasMatch(value)) {
+  //   return LanguageProvider.translate("validation", "password_lowercase");
+  // }
 
   return null;
 }String? validateOtp(String? value) {

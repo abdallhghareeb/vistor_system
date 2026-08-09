@@ -56,4 +56,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
     implementation("com.google.firebase:firebase-messaging")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.0")
+    implementation("androidx.concurrent:concurrent-futures:1.2.0")
+    implementation("com.google.guava:listenablefuture:1.0")
+
 }

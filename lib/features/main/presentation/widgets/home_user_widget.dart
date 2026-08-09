@@ -1,62 +1,65 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:visitor/core/constants/images.dart';
+
 import '../../../../config/text_style.dart';
-import '../../../../core/constants/images.dart';
-import '../../../../core/widget/svg_widget.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../notification/presentation/provider/notification_provider.dart';
+import '../../../language/presentation/provider/language_provider.dart';
 
 class HomeUserWidget extends StatelessWidget {
   const HomeUserWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider authProvider = Provider.of<AuthProvider>(context);
-    NotificationProvider notificationProvider = Provider.of<NotificationProvider>(context);
+    final authProvider = context.watch<AuthProvider>();
+    final notificationProvider = context.read<NotificationProvider>();
+    final name = authProvider.userEntity?.username?.trim();
+    final imageUrl = authProvider.userEntity?.pictureUrl;
 
-    return Padding(
-      padding: EdgeInsets.only(top: 2.h,bottom: 2.h),
-      child: Row(
-        children: [
-          Container(width:10.w,height: 10.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(fit: BoxFit.cover,
-                  image: authProvider.userEntity?.user?.profileImagePath != null ?
-                  CachedNetworkImageProvider(authProvider.userEntity!.user!.profileImagePath!):AssetImage(Images.logo)),
-              border: Border.all(color: Colors.white,width: 2),
-            ),
+    return Row(
+      children: [
+        Container(
+          width: 11.w,
+          height: 11.w,
+          padding: const EdgeInsets.all(1.5),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 1.5),
           ),
-          SizedBox(width: 2.w,),
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(authProvider.userEntity?.user?.fullName??"",style: TextStyleClass.normalStyle(color: Colors.white),),
-                Text(authProvider.userEntity?.user?.employee?.position??"",style: TextStyleClass.smallStyle(color: Colors.white),),
-              ],
-            ),
+          child: ClipOval(
+            child: imageUrl != null && imageUrl.isNotEmpty
+                ? Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => _fallback(),
+                  )
+                : _fallback(),
           ),
-          SizedBox(width: 2.w,),
-          InkWell(
-            onTap: (){
-              notificationProvider.goToNotificationPage();
-            },
-            child: Badge(
-              label: Text("${notificationProvider.unReadNum}",),
-
-              child: Container(
-                padding: EdgeInsets.all(2.w),
-                decoration:BoxDecoration(
-                    color: Color(0xff5182EF),shape: BoxShape.circle
-                ),
-                child: SvgWidget(svg: Images.notifications,width: 6.w,),
-              ),
-            ),
+        ),
+        SizedBox(width: 2.5.w),
+        Expanded(
+          child: Text(
+            name?.isNotEmpty == true
+                ? name!
+                : LanguageProvider.translate('home', 'guest'),
+            style: TextStyleClass.captionStyle(
+              color: Colors.white,
+            ).copyWith(fontSize: 12.sp, fontWeight: FontWeight.w600),
           ),
-        ],
-      ),
+        ),
+        IconButton(
+          onPressed: notificationProvider.goToNotificationPage,
+          icon: Icon(
+            Icons.notifications_none_rounded,
+            color: Colors.white,
+            size: 6.w,
+          ),
+        ),
+      ],
     );
   }
+
+  Widget _fallback() => Image.asset(Images.logo, fit: BoxFit.cover,);
 }

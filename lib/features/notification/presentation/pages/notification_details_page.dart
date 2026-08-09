@@ -4,14 +4,20 @@ import '../../../../config/text_style.dart';
 import '../../../language/presentation/provider/language_provider.dart';
 
 class NotificationDetailsPage extends StatelessWidget {
-  const NotificationDetailsPage({super.key, required this.title, required this.data});
+  const NotificationDetailsPage({
+    super.key,
+    required this.title,
+    required this.data,
+  });
   final String title, data;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(LanguageProvider.translate("notification", "notification")),
+          title: Text(
+            LanguageProvider.translate("notification", "notification"),
+          ),
           elevation: 0,
         ),
         body: Container(
@@ -22,9 +28,12 @@ class NotificationDetailsPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyleClass.normalStyle(),),
-                SizedBox(height: 1.h,),
-                Text(data, style: TextStyleClass.smallStyle(color: Colors.black54),),
+                Text(title, style: TextStyleClass.normalStyle()),
+                SizedBox(height: 1.h),
+                Text(
+                  data,
+                  style: TextStyleClass.smallStyle(color: Colors.black54),
+                ),
               ],
             ),
           ),

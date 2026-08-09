@@ -11,9 +11,10 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:toastification/toastification.dart';
 import 'config/theme.dart';
 import 'core/constants/constants.dart';
+import 'core/helper_function/api.dart';
 import 'core/helper_function/notifications.dart';
 import 'core/helper_function/prefs.dart';
 import 'core/models/local_notifications.dart';
@@ -21,20 +22,14 @@ import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/auth/presentation/providers/complete_data_provider.dart';
 import 'features/auth/presentation/providers/otp_provider.dart';
 import 'features/auth/presentation/providers/reset_password_provider.dart';
-import 'features/excuse/presentation/provider/excuse_types_provider.dart';
-import 'features/history/presentation/provider/check_provider.dart';
-import 'features/history/presentation/provider/history_provider.dart';
 import 'features/language/domain/entities/app_localizations.dart';
 import 'features/language/presentation/provider/language_provider.dart';
-import 'features/location/presentation/provider/location_provider.dart';
-import 'features/excuse/presentation/provider/add_excuse_provider.dart';
 import 'features/main/presentation/provider/main_page_provider.dart';
 import 'features/notification/presentation/provider/notification_provider.dart';
-import 'features/settings/presentation/provider/permissions_provider.dart';
 import 'features/settings/presentation/provider/settings_provider.dart';
+import 'features/scan/presentation/providers/scan_provider.dart';
+import 'features/visitors/presentation/providers/visitors_provider.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
-import 'features/splash/presentation/provider/connection_provider.dart';
-import 'features/splash/presentation/provider/select_domain_provider.dart';
 import 'features/splash/presentation/provider/splash_provider.dart';
 import 'firebase_options.dart';
 import 'injection_container.dart';
@@ -55,33 +50,17 @@ Future<void> localMessagingBackgroundHandler(NotificationResponse pay) async {
   clickNoti(pay.payload!);
 }
 
-Future<void> _waitForInternet() async {
-  final connectivity = Connectivity();
-
-  var result = await connectivity.checkConnectivity();
-  if (!result.contains(ConnectivityResult.none)) return;
-
-  final completer = Completer<void>();
-  final sub = connectivity.onConnectivityChanged.listen((results) {
-    if (!results.contains(ConnectivityResult.none)) {
-      completer.complete();
-    }
-  });
-
-  await completer.future;
-  await sub.cancel();
-}
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
   await startSharedPref();
+  await ApiHandel.getInstance.init();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await notificationsFirebase();
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  await NotificationLocalClass.init();
+  // await NotificationLocalClass.init();
   await initializeDependencies();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: [SystemUiOverlay.bottom]);
@@ -90,7 +69,6 @@ void main() async {
 
   runApp(MyApp(language: language));
 }
-
 
 RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
@@ -105,65 +83,66 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => LanguageProvider()),
         ChangeNotifierProvider(create: (context) => SplashProvider()),
-        ChangeNotifierProvider(create: (context) => PermissionsProvider()),
-
-        ChangeNotifierProvider(create: (context) => ConnectivityProvider()),
         ChangeNotifierProvider(create: (context) => AuthProvider(sl.get())),
-        ChangeNotifierProvider(create: (context) => CompleteDataProvider(sl.get())),
+        ChangeNotifierProvider(
+          create: (context) => CompleteDataProvider(sl.get()),
+        ),
         ChangeNotifierProvider(create: (context) => OtpProvider(sl.get())),
-        ChangeNotifierProvider(create: (context) => ResetPasswordProvider(sl.get())),
-        ChangeNotifierProvider(create: (context) => ExcuseTypesProvider()),
-        ChangeNotifierProvider(create: (context) => AddExcuseProvider(sl.get())),
-        ChangeNotifierProvider(create: (context) => NotificationProvider(sl.get())),
+        ChangeNotifierProvider(
+          create: (context) => ResetPasswordProvider(sl.get()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => NotificationProvider(sl.get()),
+        ),
         ChangeNotifierProvider(create: (context) => SettingsProvider(sl.get())),
+        ChangeNotifierProvider(create: (context) => ScanProvider(sl.get())),
+        ChangeNotifierProvider(create: (context) => VisitorsProvider(sl.get())),
         ChangeNotifierProvider(create: (context) => MainProvider()),
-        ChangeNotifierProvider(create: (context) => LocationProvider()),
-        ChangeNotifierProvider(create: (context) => SelectDomainProvider(sl.get())),
-        ChangeNotifierProvider(create: (context) => HistoryProvider(sl.get())),
-        ChangeNotifierProvider(create: (context) => CheckProvider(sl.get())),
       ],
       child: ChangeNotifierProvider<LanguageProvider>(
         create: (_) => language,
         child: Consumer<LanguageProvider>(
           builder: (context, lang, _) {
-            return GestureDetector(
-              onTap: () {
-                FocusScope.of(context).unfocus();
-              },
-              child: AnnotatedRegion(
-                value: barColor(),
-                child: Sizer(
-                  builder: (context, orientation, deviceType) {
-                    Constants.isTablet = (deviceType == deviceType);
-                    return MaterialApp(
-                      // showPerformanceOverlay: true,
-                      title: 'Attendix',
-                      debugShowCheckedModeBanner: false,
-                      navigatorObservers: [routeObserver],
-                      navigatorKey: Constants.navState,
-                      locale: lang.appLocal,
-                      supportedLocales: LanguageProvider.languages,
-                      builder: (context, child) {
-                        return Container(
-                          color: Colors.white,
-                          child: SizedBox(
-                            width: 100.w,
-                            height: 100.h,
-                            child: child!,
-                          ),
-                        );
-                      },
-                      localizationsDelegates: const [
-                        CountryLocalizations.delegate,
-                        AppLocalizations.delegate,
-                        GlobalMaterialLocalizations.delegate,
-                        GlobalWidgetsLocalizations.delegate,
-                        GlobalCupertinoLocalizations.delegate,
-                      ],
-                      theme: defaultTheme,
-                      home: const SplashPage(),
-                    );
-                  },
+            return ToastificationWrapper(
+              child : GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).unfocus();
+                },
+                child: AnnotatedRegion(
+                  value: barColor(),
+                  child: Sizer(
+                    builder: (context, orientation, deviceType) {
+                      Constants.isTablet = (deviceType == deviceType);
+                      return MaterialApp(
+                        // showPerformanceOverlay: true,
+                        title: 'AVMS',
+                        debugShowCheckedModeBanner: false,
+                        navigatorObservers: [routeObserver],
+                        navigatorKey: Constants.navState,
+                        locale: lang.appLocal,
+                        supportedLocales: LanguageProvider.languages,
+                        builder: (context, child) {
+                          return Container(
+                            color: Colors.white,
+                            child: SizedBox(
+                              width: 100.w,
+                              height: 100.h,
+                              child: child!,
+                            ),
+                          );
+                        },
+                        localizationsDelegates: const [
+                          CountryLocalizations.delegate,
+                          AppLocalizations.delegate,
+                          GlobalMaterialLocalizations.delegate,
+                          GlobalWidgetsLocalizations.delegate,
+                          GlobalCupertinoLocalizations.delegate,
+                        ],
+                        theme: defaultTheme,
+                        home: const SplashPage(),
+                      );
+                    },
+                  ),
                 ),
               ),
             );
@@ -178,7 +157,7 @@ class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) =>
-          true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

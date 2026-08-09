@@ -209,144 +209,146 @@ class _AddImagePageState extends State<AddImagePage> {
                   bottom: 0,
                   right: 0,
                   left: 0,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 3.w),
-                        child: SizedBox(
-                          width: 100.w,
-                          height: 9.h,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: List.generate(images.length, (index) {
-                                return InkWell(
-                                  onTap: () {
-                                    navP(
-                                      ImagesPreviewWidget(
-                                        images: images,
-                                        index: index,
-                                      ),
-                                    );
-                                  },
-                                  child: SizedBox(
-                                    width: 14.w,
-                                    height: 10.h,
-                                    child: Stack(
-                                      children: [
-                                        Positioned(
-                                          bottom: 0,
-                                          // top: 1.h,
-                                          child: SizedBox(
-                                            width: 12.w,
-                                            height: 8.h,
-                                            child: AspectRatio(
-                                              aspectRatio:
-                                                  _controller!.value.aspectRatio,
-                                              child: Image.file(
-                                                File(images[index].path),
+                  child: SafeArea(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 3.w),
+                          child: SizedBox(
+                            width: 100.w,
+                            height: 9.h,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: List.generate(images.length, (index) {
+                                  return InkWell(
+                                    onTap: () {
+                                      navP(
+                                        ImagesPreviewWidget(
+                                          images: images,
+                                          index: index,
+                                        ),
+                                      );
+                                    },
+                                    child: SizedBox(
+                                      width: 14.w,
+                                      height: 10.h,
+                                      child: Stack(
+                                        children: [
+                                          Positioned(
+                                            bottom: 0,
+                                            // top: 1.h,
+                                            child: SizedBox(
+                                              width: 12.w,
+                                              height: 8.h,
+                                              child: AspectRatio(
+                                                aspectRatio: _controller!
+                                                    .value
+                                                    .aspectRatio,
+                                                child: Image.file(
+                                                  File(images[index].path),
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        PositionedDirectional(
-                                          top: 0,
-                                          start: 0,
-                                          child: InkWell(
-                                            onTap: () {
-                                              images.removeAt(index);
-                                              setState(() {});
-                                            },
-                                            child: Icon(
-                                              Icons.remove_circle,
-                                              color: Colors.red,
-                                              size: 4.w,
+                                          PositionedDirectional(
+                                            top: 0,
+                                            start: 0,
+                                            child: InkWell(
+                                              onTap: () {
+                                                images.removeAt(index);
+                                                setState(() {});
+                                              },
+                                              child: Icon(
+                                                Icons.remove_circle,
+                                                color: Colors.red,
+                                                size: 4.w,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                );
-                              }),
+                                  );
+                                }),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 5.h),
-                      Container(
-                        // height: 11.h,
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 5.w,
-                          vertical: 2.h,
-                        ),
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  _toggleCamera();
-                                },
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Icon(
-                                      Icons.camera_enhance_sharp,
-                                      color: Colors.white,
-                                      size: Constants.isTablet ? 40 : 20,
-                                    ),
-                                    // SizedBox(height: 1.h,),
-                                    Text(
-                                      LanguageProvider.translate(
-                                        'global',
-                                        'change_camera',
-                                      ),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12.sp,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              if (widget.multiple)
-                                IconButton(
-                                  onPressed: () {
-                                    _takeImage();
-                                  },
-                                  icon: Icon(
-                                    Icons.add,
-                                    color: Colors.white,
-                                    size: 8.w,
-                                  ),
-                                ),
-                              if ((widget.multiple && images.isNotEmpty) ||
-                                  !widget.multiple)
-                                ButtonWidget(
+                        SizedBox(height: 5.h),
+                        Container(
+                          // height: 11.h,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.5),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 5.w,
+                            vertical: 2.h,
+                          ),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                InkWell(
                                   onTap: () {
-                                    _save();
+                                    _toggleCamera();
                                   },
-                                  text: 'save',
-                                  width: 20.w,
-                                  height: 4.5.h,
-                                  color: Colors.white,
-                                  textStyle: TextStyleClass.smallStyle(
-                                    color: Colors.white,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      Icon(
+                                        Icons.camera_enhance_sharp,
+                                        color: Colors.white,
+                                        size: Constants.isTablet ? 40 : 20,
+                                      ),
+                                      // SizedBox(height: 1.h,),
+                                      Text(
+                                        LanguageProvider.translate(
+                                          'global',
+                                          'change_camera',
+                                        ),
+                                        style: TextStyleClass.captionStyle(
+                                          color: Colors.white,
+                                        ).copyWith(fontSize: 12.sp),
+                                      ),
+                                    ],
                                   ),
-                                  borderRadius: 25,
-                                )
-                              else
-                                SizedBox(width: 20.w),
-                            ],
+                                ),
+                                if (widget.multiple)
+                                  IconButton(
+                                    onPressed: () {
+                                      _takeImage();
+                                    },
+                                    icon: Icon(
+                                      Icons.add,
+                                      color: Colors.white,
+                                      size: 8.w,
+                                    ),
+                                  ),
+                                if ((widget.multiple && images.isNotEmpty) ||
+                                    !widget.multiple)
+                                  ButtonWidget(
+                                    onTap: () {
+                                      _save();
+                                    },
+                                    text: 'save',
+                                    width: 20.w,
+                                    height: 4.5.h,
+                                    color: Colors.white,
+                                    textStyle: TextStyleClass.smallStyle(
+                                      color: Colors.black,
+                                    ),
+                                    borderRadius: 25,
+                                  )
+                                else
+                                  SizedBox(width: 20.w),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],

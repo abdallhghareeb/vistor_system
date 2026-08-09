@@ -11,6 +11,7 @@ import '../../../../core/dialog/snack_bar.dart';
 import '../../../../core/helper_function/navigation.dart';
 import '../../../../core/models/pagination_class.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../language/presentation/provider/language_provider.dart';
 import '../../domain/entities/notification_entity.dart';
 import '../../domain/use_cases/notification_usecaese.dart';
 import '../pages/notification_details_page.dart';
@@ -20,7 +21,9 @@ class NotificationProvider extends ChangeNotifier implements PaginationClass {
   List<NotificationEntity>? notifications;
 
   final NotificationUseCases notificationUseCases;
-  NotificationProvider(this.notificationUseCases);
+  NotificationProvider(this.notificationUseCases) {
+    pagination();
+  }
 
   @override
   int pageIndex = 1;
@@ -35,19 +38,26 @@ class NotificationProvider extends ChangeNotifier implements PaginationClass {
   Future getNotifications() async {
     Map<String, dynamic> data = {};
     data['page'] = pageIndex;
-    print('${data}');
-    Either<DioException, List<NotificationEntity>> value = await notificationUseCases.getNotifications(data);
-    value.fold((l) {
-      showToast(l.response?.data['error']??l.message ??"Something went wrong");
-    }, (r) {
-      pageIndex++;
-      notifications ??= [];
-      notifications?.addAll(r);
-      if (r.isEmpty) {
-        paginationFinished = true;
-        notifyListeners();
-      }
-    });
+    Either<DioException, List<NotificationEntity>> value =
+        await notificationUseCases.getNotifications(data);
+    value.fold(
+      (l) {
+        showToast(
+          l.response?.data['error'] ??
+              l.message ??
+              LanguageProvider.translate('error', 'error'),
+        );
+      },
+      (r) {
+        pageIndex++;
+        notifications ??= [];
+        notifications?.addAll(r);
+        if (r.isEmpty) {
+          paginationFinished = true;
+          notifyListeners();
+        }
+      },
+    );
     paginationStarted = false;
     notifyListeners();
   }
@@ -71,7 +81,10 @@ class NotificationProvider extends ChangeNotifier implements PaginationClass {
   void pagination() {
     controller.addListener(() async {
       if (controller.position.atEdge && controller.position.pixels > 50) {
-        if (!paginationFinished && !paginationStarted && notifications != null && notifications!.isNotEmpty) {
+        if (!paginationFinished &&
+            !paginationStarted &&
+            notifications != null &&
+            notifications!.isNotEmpty) {
           paginationStarted = true;
           notifyListeners();
           await getNotifications();
@@ -82,70 +95,118 @@ class NotificationProvider extends ChangeNotifier implements PaginationClass {
 
   void goToNotificationPage() {
     // if (AuthProvider.isLogin()) {
-      refresh();
-      navP(NotificationPage(),then: (val){
-        Provider.of<AuthProvider>(Constants.globalContext(), listen: false).getProfile();
-      });
+    refresh();
+    navP(
+      NotificationPage(),
+      then: (val) {
+        Provider.of<AuthProvider>(
+          Constants.globalContext(),
+          listen: false,
+        ).getProfile();
+      },
+    );
     // } else {
     //   showGuestDialog();
     // }
   }
-  void goToNotificationDetailsPage({required String title,required String data,required String id}) {
-    read(id:id);
-    navP(NotificationDetailsPage(title: title, data: data),then: (val){
-      unreadCount();
-    });
+
+  void goToNotificationDetailsPage({
+    required String title,
+    required String data,
+    required String id,
+  }) {
+    read(id: id);
+    navP(
+      NotificationDetailsPage(title: title, data: data),
+      then: (val) {
+        unreadCount();
+      },
+    );
   }
 
-
-  num unReadNum=0;
+  num unReadNum = 0;
   Future<void> unreadCount() async {
     Map<String, dynamic> data = {};
-    Either<DioException, num> value = await notificationUseCases.unreadCount(data);
-    value.fold((l) {
-      showToast(l.response?.data['error']??l.message ??"Something went wrong");
-    }, (r) {
-      unReadNum=r;
-      notifyListeners();
-    });
+    Either<DioException, num> value = await notificationUseCases.unreadCount(
+      data,
+    );
+    value.fold(
+      (l) {
+        showToast(
+          l.response?.data['error'] ??
+              l.message ??
+              LanguageProvider.translate('error', 'error'),
+        );
+      },
+      (r) {
+        unReadNum = r;
+        notifyListeners();
+      },
+    );
   }
 
   Future<void> read({required String id}) async {
     Map<String, dynamic> data = {};
-    data['id']=id;
+    data['id'] = id;
     Either<DioException, bool> value = await notificationUseCases.read(data);
-    value.fold((l) {
-      showToast(l.response?.data['error']??l.message ??"Something went wrong");
-    }, (r) {
-      notifications?.firstWhere((element) => element.id==id).isRead=true;
-      notifyListeners();
-    });
+    value.fold(
+      (l) {
+        showToast(
+          l.response?.data['error'] ??
+              l.message ??
+              LanguageProvider.translate('error', 'error'),
+        );
+      },
+      (r) {
+        notifications?.firstWhere((element) => element.id == id).isRead = true;
+        notifyListeners();
+      },
+    );
   }
 
   Future<void> readAll() async {
     Map<String, dynamic> data = {};
     Either<DioException, bool> value = await notificationUseCases.readAll(data);
-    value.fold((l) {
-      showToast(l.response?.data['error']??l.message ??"Something went wrong");
-    }, (r) {
-      for(var i in notifications!){
-        i.isRead=true;
-      }
-      unReadNum=0;
-      notifyListeners();
-    });
+    value.fold(
+      (l) {
+        showToast(
+          l.response?.data['error'] ??
+              l.message ??
+              LanguageProvider.translate('error', 'error'),
+        );
+      },
+      (r) {
+        for (var i in notifications!) {
+          i.isRead = true;
+        }
+        unReadNum = 0;
+        notifyListeners();
+      },
+    );
   }
-
 
   Future<void> registerDevice() async {
     Map<String, dynamic> data = {};
-    data['token']= await FirebaseMessaging.instance.getToken() ?? "123";
-    data['platform']=getDeviceType();
-    Either<DioException, bool> value = await notificationUseCases.registerDevice(data);
+    data['deviceToken'] = await FirebaseMessaging.instance.getToken() ?? "123";
+    data['deviceType'] = getDeviceType();
+    Either<DioException, bool> value = await notificationUseCases
+        .registerDevice(data);
     value.fold((l) {
-      showToast(l.response?.data['error']??l.message ??"Something went wrong");
-    }, (r) {
-    });
+      showToast(
+        l.response?.data['error'] ??
+            l.message ??
+            LanguageProvider.translate('error', 'error'),
+      );
+    }, (r) {});
+  }
+
+  Future<void> unregisterDevice() async {
+    Map<String, dynamic> data = {};
+    data['deviceToken'] = await FirebaseMessaging.instance.getToken() ?? "123";
+    Either<DioException, bool> value = await notificationUseCases.unRegisterDevice(data);
+    value.fold((l) {
+      showToast(l.response?.data['error'] ?? l.message ?? LanguageProvider.translate('error', 'error'),);
+    }, (r) {});
   }
 
   void rebuild() {
@@ -162,5 +223,11 @@ class NotificationProvider extends ChangeNotifier implements PaginationClass {
     } else {
       return "Unknown";
     }
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 }
