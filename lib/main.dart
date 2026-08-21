@@ -28,6 +28,7 @@ import 'features/main/presentation/provider/main_page_provider.dart';
 import 'features/notification/presentation/provider/notification_provider.dart';
 import 'features/settings/presentation/provider/settings_provider.dart';
 import 'features/scan/presentation/providers/scan_provider.dart';
+import 'features/splash/presentation/provider/select_domain_provider.dart';
 import 'features/visitors/presentation/providers/visitors_provider.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
 import 'features/splash/presentation/provider/splash_provider.dart';
@@ -60,7 +61,7 @@ void main() async {
 
   await notificationsFirebase();
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  // await NotificationLocalClass.init();
+  await NotificationLocalClass.init();
   await initializeDependencies();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: [SystemUiOverlay.bottom]);
@@ -97,6 +98,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => SettingsProvider(sl.get())),
         ChangeNotifierProvider(create: (context) => ScanProvider(sl.get())),
         ChangeNotifierProvider(create: (context) => VisitorsProvider(sl.get())),
+        ChangeNotifierProvider(
+          create: (context) => SelectDomainProvider(sl.get()),
+        ),
         ChangeNotifierProvider(create: (context) => MainProvider()),
       ],
       child: ChangeNotifierProvider<LanguageProvider>(
@@ -104,7 +108,7 @@ class MyApp extends StatelessWidget {
         child: Consumer<LanguageProvider>(
           builder: (context, lang, _) {
             return ToastificationWrapper(
-              child : GestureDetector(
+              child: GestureDetector(
                 onTap: () {
                   FocusScope.of(context).unfocus();
                 },

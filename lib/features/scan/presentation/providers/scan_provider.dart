@@ -9,6 +9,9 @@ import 'package:visitor/features/scan/presentation/pages/scan_page.dart';
 import 'package:visitor/features/scan/presentation/pages/scan_success_page.dart';
 import 'package:visitor/features/language/presentation/provider/language_provider.dart';
 
+import '../../../../core/dialog/snack_bar.dart';
+import '../../../../core/dialog/confirm_dialog.dart';
+
 enum ScanStage {
   scanning,
   loadingInvitation,
@@ -107,6 +110,24 @@ class ScanProvider extends ChangeNotifier {
     if (currentInvitation == null || cardNumber == null) return;
     if (currentInvitation.transactionType == 'out') return;
 
+    if (currentInvitation.transactionType == 'in') {
+      confirmDialog(
+        LanguageProvider.translate('scan', 'confirm_check_out_message'),
+        LanguageProvider.translate('buttons', 'yes'),
+        _createTransaction,
+        cancel: LanguageProvider.translate('buttons', 'no'),
+      );
+      return;
+    }
+
+    await _createTransaction();
+  }
+
+  Future<void> _createTransaction() async {
+    final currentInvitation = invitation;
+    final cardNumber = detectedCode;
+    if (currentInvitation == null || cardNumber == null) return;
+
     stage = ScanStage.creating;
     errorMessage = null;
     notifyListeners();
@@ -120,8 +141,7 @@ class ScanProvider extends ChangeNotifier {
     final result = await scanUseCases.createTransaction(data);
 
     result.fold((error) {
-        errorMessage = error.message ?? LanguageProvider.translate('scan', 'transaction_failed');
-        stage = ScanStage.confirmation;
+      showToast(error.response?.data['error'] ?? error.message ?? LanguageProvider.translate('error', 'error'),);
       },
       (_) {
         transactionDate = DateTime.now();

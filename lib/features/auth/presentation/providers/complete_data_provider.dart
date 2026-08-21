@@ -99,7 +99,11 @@ class CompleteDataProvider extends ChangeNotifier {
     navP(const ResetPasswordPage());
   }
 
-  void goToRegisterPage() {
+  void goToRegisterPage() async{
+    loading();
+    await Provider.of<AuthProvider>(Constants.globalContext(),listen: false).getProfile(fromLogin: true);
+    navPop();
+
     image = null;
     imageUpdated = false;
     registerInputs = [
@@ -191,10 +195,7 @@ class CompleteDataProvider extends ChangeNotifier {
         ApiHandel.getInstance.updateHeader(userEntity.token!);
       }
       await getDataReady();
-      VisitorsProvider visitorsProvider = Provider.of<VisitorsProvider>(
-        Constants.globalContext(),
-        listen: false,
-      );
+      VisitorsProvider visitorsProvider = Provider.of<VisitorsProvider>(Constants.globalContext(), listen: false,);
       visitorsProvider.getQuickOverview();
       mainProvider.goToMainPage(fromSplash: fromSplash);
       // if(userEntity.user?.employee !=null || userEntity.user?.employeeId !=null){

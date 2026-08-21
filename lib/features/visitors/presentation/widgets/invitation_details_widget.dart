@@ -57,6 +57,12 @@ class InvitationDetailsWidget extends StatelessWidget {
                         ).copyWith(fontWeight: FontWeight.w600),
                       ),
                       SizedBox(height: 0.3.h),
+                      Text("ID : ${transaction.documentId}",
+                        style: TextStyleClass.smallStyle(
+                          color: const Color(0xff27313A),
+                        ).copyWith(fontWeight: FontWeight.w500),
+                      ),
+                      SizedBox(height: 0.3.h),
                       Row(
                         children: [
                           Container(

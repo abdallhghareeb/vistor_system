@@ -1,12 +1,15 @@
 {
   "intro": {
-    "title1": "Smarter Attendance\nStarts Here",
+    "title1": "Smarter Visitor Management\nStarts Here",
     "skip": "Skip",
-    "title2": "One-Tap Attendance Tracking",
-    "body1": "Track employee attendance, manage shifts, and monitor performance  all in one place.",
-    "body2": "Employees can check in and out instantly using mobile, web, or biometric integration."
+    "title2": "Easy Check-In & Check-Out",
+    "body1": "Register visitors, manage resident access, and keep every visit organized in one secure place.",
+    "body2": "Check in and out quickly, view your visit history, and keep your personal information up to date."
   },
   "auth": {
+    "select_domain": "Please Enter Domain...",
+    "reset_domain": "Reset Domain",
+    "invalid_domain": "Sorry, this domain is invalid. Please check it and try again.",
     "login": "Login",
     "login_des": "Please Enter the Required Data",
     "changed": "Password Changed",
@@ -155,6 +158,8 @@
     "search": "Search",
       "filter_by": "Filter by:",
       "select_date": "Select date",
+      "date_from": "Date From",
+      "date_to": "Date To",
       "today": "Today",
     "this_week": "This Week",
     "this_month": "This Month",
@@ -173,6 +178,7 @@
     "location": "Location",
     "confirm_check_in": "Confirm Check-In",
     "confirm_check_out": "Confirm Check-Out",
+    "confirm_check_out_message": "Are you sure you want to check out?",
     "checked_in_success": "User Checked-In Successfully",
     "checked_out_success": "User Checked-Out Successfully",
     "card_number": "Card Number",
@@ -272,6 +278,8 @@
     "apply_excuse": "Apply Excuse",
     "confirm": "Confirm",
     "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No",
     "save": "Save",
     "check_now": "Check In Now",
     "check_in_now": "Check In Now",

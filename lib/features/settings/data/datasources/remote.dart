@@ -8,7 +8,7 @@ class SettingsRemoteDataSource {
   SettingsRemoteDataSource(this.apiHandel);
 
   Future<Either<DioException, VersionModel>> mobileVersion() async {
-    var response = await apiHandel.get('MobileVersion');
+    var response = await apiHandel.getForDomain('MobileVersion',);
     return response.fold((l) => Left(l), (r) {
       return Right(VersionModel.fromJson(r.data['data']));
     });

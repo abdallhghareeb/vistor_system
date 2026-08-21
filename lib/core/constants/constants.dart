@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../helper_function/prefs.dart';
+
 
 class Constants{
-  static  String baseUri = "http://egytest.ddns.net:8644";
-  static  String domain = '$baseUri/api/v1/';
+  // static  String baseUri = "http://egytest.ddns.net:8644";
+  // static  String baseUri = sharedPreferences.getString('domain')??"";
+  // static  String domain = '$baseUri/api/v1/';
+
+  static  String domain = sharedPreferences.getString('domain')??"";
   static final GlobalKey<NavigatorState> navState = GlobalKey<NavigatorState>();
   static final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
   static const String appId = '';

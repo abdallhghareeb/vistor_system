@@ -7,11 +7,15 @@ import '../../../language/presentation/provider/language_provider.dart';
 
 class VisitorDatePickerSheet extends StatefulWidget {
   final DateTime? initialDate;
+  final DateTime? minimumDate;
+  final DateTime? maximumDate;
   final ValueChanged<DateTime> onApply;
 
   const VisitorDatePickerSheet({
     required this.initialDate,
     required this.onApply,
+    this.minimumDate,
+    this.maximumDate,
     super.key,
   });
 
@@ -26,6 +30,14 @@ class _VisitorDatePickerSheetState extends State<VisitorDatePickerSheet> {
   void initState() {
     super.initState();
     selectedDate = widget.initialDate ?? DateTime.now();
+    if (widget.minimumDate != null &&
+        selectedDate.isBefore(widget.minimumDate!)) {
+      selectedDate = widget.minimumDate!;
+    }
+    if (widget.maximumDate != null &&
+        selectedDate.isAfter(widget.maximumDate!)) {
+      selectedDate = widget.maximumDate!;
+    }
   }
 
   @override
@@ -55,8 +67,8 @@ class _VisitorDatePickerSheetState extends State<VisitorDatePickerSheet> {
                 mode: CupertinoDatePickerMode.date,
                 dateOrder: DatePickerDateOrder.mdy,
                 initialDateTime: selectedDate,
-                minimumDate: DateTime(2020),
-                maximumDate: DateTime(2035),
+                minimumDate: widget.minimumDate ?? DateTime(2020),
+                maximumDate: widget.maximumDate ?? DateTime(2035),
                 onDateTimeChanged: (date) => selectedDate = date,
               ),
             ),

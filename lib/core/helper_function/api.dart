@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:provider/provider.dart';
+import 'package:visitor/features/splash/presentation/provider/select_domain_provider.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../constants/constants.dart';
 import 'convert.dart';
@@ -247,11 +248,71 @@ class ApiHandel {
     }
   }
 
+  Future<Either<DioException, Response>> getForDomain(
+      String path,
+      ) async {
+    try {
+      final provider = Provider.of<SelectDomainProvider>(Constants.globalContext(), listen: false,);
+      final savedDomain = sharedPreferences.getString('domain')?.trim();
+      final enteredDomain = provider.codeController.text.trim();
+
+      final selectedDomain =
+      savedDomain != null && savedDomain.isNotEmpty
+          ? savedDomain
+          : enteredDomain;
+
+      if (selectedDomain.isEmpty) {
+        return Left(
+          DioException(
+            requestOptions: RequestOptions(path: path),
+            message: 'Please enter a valid domain',
+          ),
+        );
+      }
+
+      final cleanDomain = selectedDomain.replaceAll(RegExp(r'/+$'), '',);
+
+      final cleanPath = path.replaceAll(RegExp(r'^/+'), '',
+      );
+      final dio = Dio(
+        BaseOptions(
+          baseUrl: '$cleanDomain/',
+          validateStatus: (_) => true,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        ),
+      );
+
+      cancelToken = CancelToken();
+
+      final response = await dio.get(
+        cleanPath,
+        cancelToken: cancelToken,
+      );
+
+      if (response.statusCode != null && response.statusCode! >= 200 && response.statusCode! < 300) {
+        return Right(response);
+      }
+      return Left(dioException(response));
+    } on DioException catch (e) {
+      return Left(
+        e.response == null ? e : dioException(e.response!),
+      );
+    } catch (e, stackTrace) {
+      return Left(
+        DioException(
+          requestOptions: RequestOptions(path: path),
+          message: e.toString(),
+        ),
+      );
+    }
+  }
   Future reLogin(String url) async {
     String? token = sharedPreferences.getString('token');
     if (token != null) {
       if (!url.contains("GenrateNewToken") && token.isNotEmpty && JwtDecoder.isExpired(token)) {
-        print('sssssssssssssssss');
         await Provider.of<AuthProvider>(Constants.globalContext(), listen: false,).refreshToken(token: token);
       }
     }

@@ -42,7 +42,7 @@ class AuthProvider extends ChangeNotifier {
     return sharedPreferences.getString('token') != null;
   }
 
-  Future getProfile({bool fromSplash = false}) async {
+  Future getProfile({bool fromSplash = false,bool fromLogin = false}) async {
     Map<String, dynamic> data = {};
     Either<DioException, UserEntity> login = await userUseCases.getProfile(
       data,
@@ -53,8 +53,12 @@ class AuthProvider extends ChangeNotifier {
         goToLoginPage();
       },
       (r) async {
-        Provider.of<CompleteDataProvider>(Constants.globalContext(), listen: false,)
-            .successLogin(userEntity: r, fromSplash: fromSplash);
+        if(fromLogin){
+          userEntity = r;
+        }else{
+          Provider.of<CompleteDataProvider>(Constants.globalContext(), listen: false,)
+              .successLogin(userEntity: r, fromSplash: fromSplash);
+        }
         notifyListeners();
       },
     );
@@ -127,20 +131,18 @@ class AuthProvider extends ChangeNotifier {
     }
     if (!fromSplash) loading();
     Either<DioException, UserEntity> login = await userUseCases.login(data);
+    if (!fromSplash) navPop();
     login.fold(
       (l) {
-        if (!fromSplash) navPop();
         if (fromSplash) {
           sharedPreferences.remove("phone");
-          // navPARU(LoginPage());
         } else {
-          showToast(l.response?.data['message']??l.message);
+          showToast(l.response?.data['message'] ?? LanguageProvider.translate('error', 'error'));
         }
       },
       (r) async {
-        Provider.of<CompleteDataProvider>(
-          Constants.globalContext(),
-          listen: false,
+
+        Provider.of<CompleteDataProvider>(Constants.globalContext(), listen: false,
         ).successLogin(userEntity: r, fromSplash: fromSplash);
       },
     );

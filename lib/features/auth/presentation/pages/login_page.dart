@@ -6,6 +6,7 @@ import '../../../../config/text_style.dart';
 import '../../../../core/widget/button_widget.dart';
 import '../../../../core/widget/list_text_field.dart';
 import '../../../language/presentation/provider/language_provider.dart';
+import '../../../splash/presentation/provider/select_domain_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/reset_password_provider.dart';
 
@@ -79,6 +80,20 @@ class LoginPage extends StatelessWidget {
                               ),
                             ],
                           ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 2.h),
+                    SizedBox(height: 2.h),
+                    InkWell(
+                      onTap: (){
+                        Provider.of<SelectDomainProvider>(context,listen: false).removeDomain();
+                      },
+                      child: Center(
+                        child: Text(
+                          LanguageProvider.translate("auth", "reset_domain",),
+                          style: TextStyleClass.normalStyle(color: AppColor.defaultColor)
+                              .copyWith(fontWeight: FontWeight.bold,fontSize: 12.sp),
                         ),
                       ),
                     ),

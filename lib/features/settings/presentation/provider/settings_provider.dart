@@ -2,6 +2,9 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:visitor/core/constants/constants.dart';
+import 'package:visitor/core/dialog/snack_bar.dart';
 import 'package:visitor/core/helper_function/navigation.dart';
 import 'package:visitor/features/settings/presentation/pages/version_page.dart';
 import 'package:visitor/features/settings/presentation/pages/web_view.dart';
@@ -19,7 +22,8 @@ class SettingsProvider extends ChangeNotifier {
   String selectedLanguageCode = 'ar';
 
 
-  void prepareData() {}
+  void prepareData() {
+  }
 
   void prepareProfile({String? name}) {
     fullNameController.text = name ?? '';
@@ -57,14 +61,18 @@ class SettingsProvider extends ChangeNotifier {
   }
 
   String version = "0.0";
+  bool correctDomain= false;
   Future mobileVersion() async {
     Either<DioException, VersionEntity> login = await settingsUseCases.mobileVersion();
-    login.fold((l) {}, (r) async {
+    login.fold((l) {
+      correctDomain= false;
+    }, (r) async {
       if (Platform.isAndroid) {
         version = r.opreatorMobileAndriodVersion;
       } else if (Platform.isIOS) {
         version = r.opreatorMobileIosVersion;
       }
+      correctDomain= true;
       notifyListeners();
       },
     );

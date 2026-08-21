@@ -11,7 +11,7 @@ class VisitorsRemoteDataSource {
 
   Future<Either<DioException, List<VisitorTransactionModel>>>
   getAllTransactions(Map<String, dynamic> data) async {
-    var response = await apiHandel.get('report/AllTransactionReport', data);
+    var response = await apiHandel.get('report/AllTransactionReport?orderby=createDate&orderbyType=desc', data);
 
     return response.fold((l) => Left(l), (r) {
       List<VisitorTransactionModel> list = [];

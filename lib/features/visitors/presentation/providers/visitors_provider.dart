@@ -32,12 +32,9 @@ class VisitorsProvider extends ChangeNotifier implements PaginationClass {
         await visitorsUseCases.getAllTransactions(data);
     result.fold(
       (l) {
-        showToast(
-          l.message ?? LanguageProvider.translate('error', 'load_data_failed'),
-        );
-      },
-      (r) {
-        quickOverview ??= [];
+        showToast(l.response?.data['error'] ?? l.message ?? LanguageProvider.translate('error', 'error'),);
+      }, (r) {
+        quickOverview = [];
         quickOverview?.addAll(r);
         notifyListeners();
       },
@@ -133,23 +130,18 @@ class VisitorsProvider extends ChangeNotifier implements PaginationClass {
     });
   }
 
-  DateTime? selectedDate;
+  DateTime? dateFrom;
+  DateTime? dateTo;
   VisitorDatePreset? selectedDatePreset;
   final Set<VisitorStatus> selectedStatuses = {VisitorStatus.checkedIn};
   Set<VisitorStatus> appliedStatuses = {};
   bool filtersApplied = false;
 
   bool get hasSelectedDateFilter =>
-      selectedDate != null || selectedDatePreset != null;
+      dateFrom != null || dateTo != null || selectedDatePreset != null;
 
   int get selectedFilterCount =>
       (hasSelectedDateFilter ? 1 : 0) + selectedStatuses.length;
-
-  String? get formattedDate {
-    final date = selectedDate;
-    if (date == null) return null;
-    return '${date.day}-${date.month}-${date.year}';
-  }
 
   void searchVisitors(String _) {
     refresh();
@@ -160,7 +152,8 @@ class VisitorsProvider extends ChangeNotifier implements PaginationClass {
       clearDateFilter();
       return;
     }
-    selectedDate = null;
+    dateFrom = null;
+    dateTo = null;
     selectedDatePreset = preset;
     notifyListeners();
   }
@@ -174,20 +167,31 @@ class VisitorsProvider extends ChangeNotifier implements PaginationClass {
     notifyListeners();
   }
 
-  void selectDate(DateTime date) {
-    selectedDate = date;
+  void selectDateFrom(DateTime date) {
+    dateFrom = date;
+    if (dateTo != null && dateTo!.isBefore(date)) {
+      dateTo = null;
+    }
+    selectedDatePreset = null;
+    notifyListeners();
+  }
+
+  void selectDateTo(DateTime date) {
+    dateTo = date;
     selectedDatePreset = null;
     notifyListeners();
   }
 
   void clearDateFilter() {
-    selectedDate = null;
+    dateFrom = null;
+    dateTo = null;
     selectedDatePreset = null;
     notifyListeners();
   }
 
   void resetFilters() {
-    selectedDate = null;
+    dateFrom = null;
+    dateTo = null;
     selectedDatePreset = null;
     selectedStatuses.clear();
     appliedStatuses = {};
@@ -218,14 +222,18 @@ class VisitorsProvider extends ChangeNotifier implements PaginationClass {
         startDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
         endDate = DateTime(DateTime.now().year, DateTime.now().month + 1, 0);
       case null:
-        startDate = selectedDate;
-        endDate = selectedDate;
+        startDate = dateFrom;
+        endDate = dateTo;
     }
 
-    if (startDate == null || endDate == null) return;
-
-    data['CreateDateFrom'] = '${convertDateToStringYMD(startDate)}T00:00:00';
-    data['CreateDateTo'] = '${convertDateToStringYMD(endDate)}T23:59:59';
+    if (startDate != null) {
+      data['CreateDateFrom'] =
+          '${convertDateToStringYMD(startDate)}T00:00:00';
+    }
+    if (endDate != null) {
+      data['CreateDateTo'] =
+          '${convertDateToStringYMD(endDate)}T23:59:59';
+    }
   }
 
   @override

@@ -45,66 +45,44 @@ class VisitorsFilterSheet extends StatelessWidget {
               ).copyWith(fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 2.h),
-            Text(
-              LanguageProvider.translate('inputs', 'date'),
-              style: TextStyleClass.normalStyle(
-                color: AppColor.defaultBlackColor,
-              ).copyWith(fontWeight: FontWeight.w600),
-            ),
-            SizedBox(height: 0.8.h),
-            InkWell(
-              onTap: () => showModalBottomSheet<void>(
-                context: context,
-                isScrollControlled: true,
-                useSafeArea: true,
-                backgroundColor: Colors.transparent,
-                builder: (_) => VisitorDatePickerSheet(
-                  initialDate: provider.selectedDate,
-                  onApply: provider.selectDate,
-                ),
-              ),
-              borderRadius: BorderRadius.circular(2.w),
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.4.h),
-                decoration: BoxDecoration(
-                  border: Border.all(color: const Color(0xffD7DEE3)),
-                  borderRadius: BorderRadius.circular(2.w),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        provider.formattedDate ??
-                            LanguageProvider.translate(
-                              'visitors',
-                              'select_date',
-                            ),
-                        style: TextStyleClass.normalStyle(
-                          color: provider.formattedDate == null
-                              ? const Color(0xff9CA1AA)
-                              : AppColor.defaultBlackColor,
-                        ),
+            Row(
+              children: [
+                Expanded(
+                  child: _DateFilterField(
+                    label: LanguageProvider.translate('visitors', 'date_from'),
+                    date: provider.dateFrom,
+                    onTap: () => showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      useSafeArea: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => VisitorDatePickerSheet(
+                        initialDate: provider.dateFrom,
+                        maximumDate: provider.dateTo,
+                        onApply: provider.selectDateFrom,
                       ),
                     ),
-                    if (provider.hasSelectedDateFilter)
-                      InkWell(
-                        onTap: provider.clearDateFilter,
-                        child: Icon(
-                          Icons.close,
-                          color: AppColor.defaultColor,
-                          size: 4.5.w,
-                        ),
-                      )
-                    else
-                      Icon(
-                        Icons.calendar_month_outlined,
-                        color: AppColor.defaultColor,
-                        size: 4.5.w,
-                      ),
-                  ],
+                  ),
                 ),
-              ),
+                SizedBox(width: 2.w),
+                Expanded(
+                  child: _DateFilterField(
+                    label: LanguageProvider.translate('visitors', 'date_to'),
+                    date: provider.dateTo,
+                    onTap: () => showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      useSafeArea: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => VisitorDatePickerSheet(
+                        initialDate: provider.dateTo,
+                        minimumDate: provider.dateFrom,
+                        onApply: provider.selectDateTo,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 1.h),
             Row(
@@ -214,6 +192,72 @@ class VisitorsFilterSheet extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _DateFilterField extends StatelessWidget {
+  final String label;
+  final DateTime? date;
+  final VoidCallback onTap;
+
+  const _DateFilterField({
+    required this.label,
+    required this.date,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final formattedDate = date == null
+        ? null
+        : '${date!.day}-${date!.month}-${date!.year}';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyleClass.normalStyle(
+            color: AppColor.defaultBlackColor,
+          ).copyWith(fontWeight: FontWeight.w600),
+        ),
+        SizedBox(height: 0.8.h),
+        InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(2.w),
+          child: Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.4.h),
+            decoration: BoxDecoration(
+              border: Border.all(color: const Color(0xffD7DEE3)),
+              borderRadius: BorderRadius.circular(2.w),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    formattedDate ??
+                        LanguageProvider.translate('visitors', 'select_date'),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyleClass.normalStyle(
+                      color: formattedDate == null
+                          ? const Color(0xff9CA1AA)
+                          : AppColor.defaultBlackColor,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.calendar_month_outlined,
+                  color: AppColor.defaultColor,
+                  size: 4.5.w,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
