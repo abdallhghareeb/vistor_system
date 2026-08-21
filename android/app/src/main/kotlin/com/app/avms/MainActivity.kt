@@ -1,4 +1,4 @@
-package com.app.visitor
+package com.app.avms
 
 import io.flutter.embedding.android.FlutterActivity
 

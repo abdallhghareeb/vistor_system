@@ -47,8 +47,7 @@ class AuthProvider extends ChangeNotifier {
     Either<DioException, UserEntity> login = await userUseCases.getProfile(
       data,
     );
-    login.fold(
-      (l) {
+    login.fold((l) {
         showToast(l.message ?? LanguageProvider.translate('error', 'error'));
         goToLoginPage();
       },
