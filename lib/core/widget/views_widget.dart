@@ -52,26 +52,3 @@ class ViewWidget extends StatelessWidget {
         )
       ],
     ); */
-
-    /* InkWell(
-                        onTap: () {},
-                        child: Container(
-                          padding: EdgeInsets.all(1.5.w),
-                          decoration: BoxDecoration(
-                              color: AppColor.defaultColor,
-                              borderRadius: BorderRadius.circular(4)),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              const Icon(Icons.location_on_outlined,
-                                  color: Colors.white),
-                              Text(
-                                data[i]["smallbutton"],
-                                style: TextStyleClass.normalStyle(
-                                    color: Colors.white),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ), */

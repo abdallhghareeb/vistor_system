@@ -29,7 +29,6 @@ class Images {
   static const String activeSettings = 'assets/images/home/active_settings.svg';
   static const String settings = 'assets/images/home/settings.svg';
   static const String wifi = 'assets/images/home/wifi.svg';
-  static const String workLocation = 'assets/images/home/work_location.png';
 
   // settings Icons
   static const String check = 'assets/images/settings/check.svg';

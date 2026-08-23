@@ -98,16 +98,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  void startRefreshTimer(String? token) {
-    const duration = Duration(minutes: 59);
-    _refreshTimer = Timer.periodic(duration, (timer) {
-      refreshToken(token: token);
-    });
-  }
-
-  void stopRefreshTimer() {
-    _refreshTimer?.cancel();
-  }
 
   Future refreshToken({String? token}) async {
     Map<String, dynamic> data = {};

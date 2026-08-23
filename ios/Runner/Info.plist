@@ -35,8 +35,6 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>AVMS uses the camera to scan visitor QR codes and capture profile photos.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>AVMS uses your location while the app is open to support location-based visitor services.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>AVMS uses your photo library when you choose a profile photo.</string>
 	<key>UIApplicationSceneManifest</key>
