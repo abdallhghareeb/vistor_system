@@ -163,7 +163,7 @@ class AuthProvider extends ChangeNotifier {
       // String token = await accessTokenGetter.getAccessToken();
       token = await getFirebaseMessagingToken() ?? '';
       data['token'] = token;
-      userUseCases.logout(data);
+      // userUseCases.logout(data);
       Provider.of<NotificationProvider>(
         Constants.globalContext(),
         listen: false,
