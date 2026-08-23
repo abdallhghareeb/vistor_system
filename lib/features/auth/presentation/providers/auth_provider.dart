@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/constants/constants.dart';
@@ -11,6 +10,7 @@ import '../../../../core/dialog/custom_snack_bar.dart';
 import '../../../../core/dialog/snack_bar.dart';
 import '../../../../core/dialog/success_dialog.dart';
 import '../../../../core/helper_function/api.dart';
+import '../../../../core/helper_function/firebase_messaging_token.dart';
 import '../../../../core/helper_function/loading.dart';
 import '../../../../core/helper_function/navigation.dart';
 import '../../../../core/helper_function/prefs.dart';
@@ -42,21 +42,24 @@ class AuthProvider extends ChangeNotifier {
     return sharedPreferences.getString('token') != null;
   }
 
-  Future getProfile({bool fromSplash = false,bool fromLogin = false}) async {
+  Future getProfile({bool fromSplash = false, bool fromLogin = false}) async {
     Map<String, dynamic> data = {};
     Either<DioException, UserEntity> login = await userUseCases.getProfile(
       data,
     );
-    login.fold((l) {
+    login.fold(
+      (l) {
         showToast(l.message ?? LanguageProvider.translate('error', 'error'));
         goToLoginPage();
       },
       (r) async {
-        if(fromLogin){
+        if (fromLogin) {
           userEntity = r;
-        }else{
-          Provider.of<CompleteDataProvider>(Constants.globalContext(), listen: false,)
-              .successLogin(userEntity: r, fromSplash: fromSplash);
+        } else {
+          Provider.of<CompleteDataProvider>(
+            Constants.globalContext(),
+            listen: false,
+          ).successLogin(userEntity: r, fromSplash: fromSplash);
         }
         notifyListeners();
       },
@@ -136,12 +139,16 @@ class AuthProvider extends ChangeNotifier {
         if (fromSplash) {
           sharedPreferences.remove("phone");
         } else {
-          showToast(l.response?.data['message'] ?? LanguageProvider.translate('error', 'error'));
+          showToast(
+            l.response?.data['message'] ??
+                LanguageProvider.translate('error', 'error'),
+          );
         }
       },
       (r) async {
-
-        Provider.of<CompleteDataProvider>(Constants.globalContext(), listen: false,
+        Provider.of<CompleteDataProvider>(
+          Constants.globalContext(),
+          listen: false,
         ).successLogin(userEntity: r, fromSplash: fromSplash);
       },
     );
@@ -154,20 +161,26 @@ class AuthProvider extends ChangeNotifier {
       Map<String, dynamic> data = {};
       // AccessTokenFireBase accessTokenGetter = AccessTokenFireBase();
       // String token = await accessTokenGetter.getAccessToken();
-      token = await FirebaseMessaging.instance.getToken() ?? "123";
+      token = await getFirebaseMessagingToken() ?? '';
       data['token'] = token;
       userUseCases.logout(data);
-      Provider.of<NotificationProvider>(Constants.globalContext(), listen: false,).unregisterDevice();
+      Provider.of<NotificationProvider>(
+        Constants.globalContext(),
+        listen: false,
+      ).unregisterDevice();
       successLogout();
     }
   }
 
   void deleteAccount() async {
-
-    Either<DioException, bool> login = await userUseCases.deleteProfile({'id': userEntity?.userId});
-    login.fold((l) {
+    Either<DioException, bool> login = await userUseCases.deleteProfile({
+      'id': userEntity?.userId,
+    });
+    login.fold(
+      (l) {
         showToast(l.message!);
-    }, (r) async {
+      },
+      (r) async {
         successLogout();
         notifyListeners();
       },
@@ -281,8 +294,10 @@ class AuthProvider extends ChangeNotifier {
         label: "password",
         onShownTap: () {
           registerInputs
-              .firstWhere((element) => element.key == "password").obscureText = !registerInputs
-              .firstWhere((element) => element.key == "password").obscureText;
+              .firstWhere((element) => element.key == "password")
+              .obscureText = !registerInputs
+              .firstWhere((element) => element.key == "password")
+              .obscureText;
           notifyListeners();
         },
         next: true,
@@ -295,8 +310,10 @@ class AuthProvider extends ChangeNotifier {
         label: "confirm_password",
         onShownTap: () {
           registerInputs
-              .firstWhere((element) => element.key == "ConfirmPassword").obscureText = !registerInputs
-              .firstWhere((element) => element.key == "ConfirmPassword").obscureText;
+              .firstWhere((element) => element.key == "ConfirmPassword")
+              .obscureText = !registerInputs
+              .firstWhere((element) => element.key == "ConfirmPassword")
+              .obscureText;
           notifyListeners();
         },
         next: false,
@@ -318,10 +335,14 @@ class AuthProvider extends ChangeNotifier {
       data[element.key ?? ""] = element.controller.text;
     }
     // data.remove("confirm_password");
-    CompleteDataProvider completeDataProvider =Provider.of(Constants.globalContext(),listen: false);
-    if(completeDataProvider.image != null){
-      data['Image'] =await MultipartFile.fromFile(completeDataProvider.image!.path);
-
+    CompleteDataProvider completeDataProvider = Provider.of(
+      Constants.globalContext(),
+      listen: false,
+    );
+    if (completeDataProvider.image != null) {
+      data['Image'] = await MultipartFile.fromFile(
+        completeDataProvider.image!.path,
+      );
     }
     data['Roles'] = "Operator";
     loading();
@@ -329,8 +350,12 @@ class AuthProvider extends ChangeNotifier {
     navPop();
     login.fold(
       (l) {
-        showToast(l.response?.data['error'] ?? l.response?.data['message'] ??
-            l.message ?? LanguageProvider.translate('error', 'error'),);
+        showToast(
+          l.response?.data['error'] ??
+              l.response?.data['message'] ??
+              l.message ??
+              LanguageProvider.translate('error', 'error'),
+        );
       },
       (r) async {
         successDialog(

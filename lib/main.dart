@@ -57,7 +57,7 @@ void main() async {
   await startSharedPref();
   await ApiHandel.getInstance.init();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await notificationsFirebase();
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);

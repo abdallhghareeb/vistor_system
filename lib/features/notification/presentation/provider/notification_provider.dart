@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/constants.dart';
 import '../../../../core/dialog/snack_bar.dart';
 import '../../../../core/helper_function/navigation.dart';
+import '../../../../core/helper_function/firebase_messaging_token.dart';
 import '../../../../core/models/pagination_class.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../language/presentation/provider/language_provider.dart';
@@ -186,8 +186,11 @@ class NotificationProvider extends ChangeNotifier implements PaginationClass {
   }
 
   Future<void> registerDevice() async {
+    final deviceToken = await getFirebaseMessagingToken();
+    if (deviceToken == null) return;
+
     Map<String, dynamic> data = {};
-    data['deviceToken'] = await FirebaseMessaging.instance.getToken() ?? "123";
+    data['deviceToken'] = deviceToken;
     data['deviceType'] = getDeviceType();
     Either<DioException, bool> value = await notificationUseCases
         .registerDevice(data);
@@ -201,11 +204,19 @@ class NotificationProvider extends ChangeNotifier implements PaginationClass {
   }
 
   Future<void> unregisterDevice() async {
+    final deviceToken = await getFirebaseMessagingToken();
+    if (deviceToken == null) return;
+
     Map<String, dynamic> data = {};
-    data['deviceToken'] = await FirebaseMessaging.instance.getToken() ?? "123";
-    Either<DioException, bool> value = await notificationUseCases.unRegisterDevice(data);
+    data['deviceToken'] = deviceToken;
+    Either<DioException, bool> value = await notificationUseCases
+        .unRegisterDevice(data);
     value.fold((l) {
-      showToast(l.response?.data['error'] ?? l.message ?? LanguageProvider.translate('error', 'error'),);
+      showToast(
+        l.response?.data['error'] ??
+            l.message ??
+            LanguageProvider.translate('error', 'error'),
+      );
     }, (r) {});
   }
 

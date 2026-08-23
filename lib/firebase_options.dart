@@ -51,19 +51,17 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyB6NWFnmjNt4F2WuMTGitZHmLCmuvcf7i4',
-    appId: '1:134059576531:android:3a7077e71c65073b109826',
+    appId: '1:134059576531:android:4e0bd851fc77c969109826',
     messagingSenderId: '134059576531',
     projectId: 'avms-10cbc',
     storageBucket: 'avms-10cbc.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAJhiOwcxkKCxtkfQUC7EvHiD3U_aPq6Nw',
-    appId: '1:20835769423:ios:fbb8d6d61306a504075e3a',
-    messagingSenderId: '20835769423',
-    projectId: 'attendance-b1c36',
-    storageBucket: 'attendance-b1c36.firebasestorage.app',
-    iosBundleId: 'com.zeroonez.attendance',
+    apiKey: 'AIzaSyDITxnu_lX3W5ZryIzlKBMYluzdOLT3RqM',
+    appId: '1:134059576531:ios:3492e07027ecf4cf109826',
+    messagingSenderId: '134059576531',
+    projectId: 'avms-10cbc',
+    storageBucket: 'avms-10cbc.firebasestorage.app',
+    iosBundleId: 'com.app.avms',
   );
-
 }
