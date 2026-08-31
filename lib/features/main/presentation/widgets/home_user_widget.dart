@@ -49,17 +49,22 @@ class HomeUserWidget extends StatelessWidget {
             ).copyWith(fontSize: 12.sp, fontWeight: FontWeight.w600),
           ),
         ),
-        Badge(
-          label: Text("${notificationProvider.unReadNum}"),
-          isLabelVisible: notificationProvider.unReadNum>0 && authProvider.userEntity !=null ,
-          child: InkWell(
-            onTap: notificationProvider.goToNotificationPage,
-            child: Icon(
-              Icons.notifications_none_rounded,
-              color: Colors.white,
-              size: 6.w,
+        Consumer<NotificationProvider>(builder:
+            (BuildContext context, value, Widget?child) {
+          return Badge(
+            label: Text("${value.unReadNum}"),
+            isLabelVisible: value.unReadNum>0 && authProvider.userEntity !=null ,
+            child: InkWell(
+              onTap: value.goToNotificationPage,
+              child: Icon(
+                Icons.notifications_none_rounded,
+                color: Colors.white,
+                size: 6.w,
+              ),
             ),
-          ),
+          );
+            },
+
         ),
       ],
     );
