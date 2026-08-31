@@ -140,6 +140,7 @@ class NotificationProvider extends ChangeNotifier implements PaginationClass {
       },
       (r) {
         unReadNum = r;
+        print('xxxxxxxxxxxxxxxxxxx$unReadNum}');
         notifyListeners();
       },
     );
@@ -200,7 +201,8 @@ class NotificationProvider extends ChangeNotifier implements PaginationClass {
             l.message ??
             LanguageProvider.translate('error', 'error'),
       );
-    }, (r) {});
+
+    }, (r) {unreadCount();});
   }
 
   Future<void> unregisterDevice() async {

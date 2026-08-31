@@ -49,12 +49,16 @@ class HomeUserWidget extends StatelessWidget {
             ).copyWith(fontSize: 12.sp, fontWeight: FontWeight.w600),
           ),
         ),
-        IconButton(
-          onPressed: notificationProvider.goToNotificationPage,
-          icon: Icon(
-            Icons.notifications_none_rounded,
-            color: Colors.white,
-            size: 6.w,
+        Badge(
+          label: Text("${notificationProvider.unReadNum}"),
+          isLabelVisible: notificationProvider.unReadNum>0 && authProvider.userEntity !=null ,
+          child: InkWell(
+            onTap: notificationProvider.goToNotificationPage,
+            child: Icon(
+              Icons.notifications_none_rounded,
+              color: Colors.white,
+              size: 6.w,
+            ),
           ),
         ),
       ],

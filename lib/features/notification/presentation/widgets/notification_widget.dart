@@ -38,30 +38,28 @@ class NotificationWidget extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 1.h),
         child: Row(
           children: [
-            Container(
-              width: 11.w,
-              height: 11.w,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(2.5.w),
-              ),
-              child: Icon(icon, color: color, size: 5.5.w),
-            ),
-            SizedBox(width: 3.w),
+            // Container(
+            //   width: 11.w,
+            //   height: 11.w,
+            //   decoration: BoxDecoration(
+            //     color: color.withValues(alpha: 0.1),
+            //     borderRadius: BorderRadius.circular(2.5.w),
+            //   ),
+            //   child: Icon(icon, color: color, size: 5.5.w),
+            // ),
+            // SizedBox(width: 3.w),
             Expanded(
               child: Text(
                 message,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyleClass.captionStyle(
-                  color: const Color(0xff66717C),
-                ).copyWith(height: 1.25),
+                style: TextStyleClass.smallStyle().copyWith(height: 1.25),
               ),
             ),
             SizedBox(width: 2.w),
             Text(
               time,
-              style: TextStyleClass.labelStyle(color: const Color(0xffBBC1C6)),
+              style: TextStyleClass.smallStyle(color: const Color(0xffBBC1C6)),
             ),
           ],
         ),

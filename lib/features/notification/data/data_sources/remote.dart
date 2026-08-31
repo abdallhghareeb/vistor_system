@@ -36,7 +36,7 @@ class NotificationRemoteDataSource {
         return Left(l);
       },
       (r) {
-        return Right(convertDataToNum(r.data['data']['count']));
+        return Right(convertDataToNum(r.data['data']));
       },
     );
   }

@@ -14,14 +14,12 @@ class NotificationModel extends NotificationEntity {
 
   factory NotificationModel.fromJson(Map data) {
     DateTime? date;
-    if (data['createdAtLocal'] != null) {
-      date = DateFormat(
-        "MM/dd/yyyy, HH:mm:ss",
-      ).parse(data['createdAtLocal']).toLocal();
+    if (data['createDate'] != null) {
+      date = DateTime.parse(data['createDate']).toLocal();
     }
     return NotificationModel(
       title: data['title'],
-      description: data['message'],
+      description: data['body'],
       createdAt: getDiffTime(date ?? DateTime.now()),
       isRead: convertDataToBool(data['isRead']),
       id: data['id'].toString(),
