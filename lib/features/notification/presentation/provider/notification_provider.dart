@@ -140,7 +140,6 @@ class NotificationProvider extends ChangeNotifier implements PaginationClass {
       },
       (r) {
         unReadNum = r;
-        print('xxxxxxxxxxxxxxxxxxx$unReadNum}');
         notifyListeners();
       },
     );
