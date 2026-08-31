@@ -34,7 +34,8 @@ class NotificationSectionWidget extends StatelessWidget {
             return NotificationWidget(
               message: notification.description,
               time: notification.createdAt,
-              tone: NotificationTone.values[index % 3],
+              isRead: notification.isRead,
+              tone: NotificationTone.fromEventType(notification.eventType),
               onTap: () {
                 notificationProvider.goToNotificationDetailsPage(
                   title: notification.title,

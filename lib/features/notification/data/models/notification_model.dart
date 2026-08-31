@@ -1,5 +1,3 @@
-import 'package:intl/intl.dart';
-
 import '../../../../core/helper_function/convert.dart';
 import '../../domain/entities/notification_entity.dart';
 
@@ -10,6 +8,7 @@ class NotificationModel extends NotificationEntity {
     required super.createdAt,
     required super.isRead,
     required super.id,
+    required super.eventType,
   });
 
   factory NotificationModel.fromJson(Map data) {
@@ -23,6 +22,7 @@ class NotificationModel extends NotificationEntity {
       createdAt: getDiffTime(date ?? DateTime.now()),
       isRead: convertDataToBool(data['isRead']),
       id: data['id'].toString(),
+      eventType: int.tryParse(data['eventType']?.toString() ?? '') ?? -1,
     );
   }
 }
