@@ -3,10 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../config/app_color.dart';
 import '../../../../config/text_style.dart';
+import '../../../../core/dialog/guest_dialog.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/providers/complete_data_provider.dart';
 import '../../../language/presentation/provider/language_provider.dart';
 import '../../../notification/presentation/provider/notification_provider.dart';
+import '../../../splash/presentation/provider/select_domain_provider.dart';
 import '../provider/settings_provider.dart';
 import '../widgets/settings_app_bar.dart';
 import '../widgets/settings_avatar.dart';
@@ -20,8 +22,14 @@ class SettingsPage extends StatelessWidget {
     final authProvider = context.watch<AuthProvider>();
     final settingsProvider = context.read<SettingsProvider>();
     final user = authProvider.userEntity;
-    final userName = user?.username?.trim().isNotEmpty == true ? user!.username! : LanguageProvider.translate('home', 'guest');
-    CompleteDataProvider  completeDataProvider = Provider.of<CompleteDataProvider>(context, listen: false,);
+    final isGuest = AuthProvider.isGuestMode();
+    final userName = isGuest
+        ? LanguageProvider.translate('settings', 'guest_name')
+        : user?.username?.trim().isNotEmpty == true
+        ? user!.username!
+        : LanguageProvider.translate('home', 'guest');
+    CompleteDataProvider completeDataProvider =
+        Provider.of<CompleteDataProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: const Color(0xffF7F8FA),
       appBar: const SettingsAppBar(title: 'settings', showBackButton: false),
@@ -31,6 +39,7 @@ class SettingsPage extends StatelessWidget {
           _ProfileCard(
             name: userName,
             imageUrl: user?.pictureUrl,
+            showEdit: !isGuest,
             onEdit: () {
               settingsProvider.prepareProfile(name: userName);
               completeDataProvider.goToRegisterPage();
@@ -44,14 +53,20 @@ class SettingsPage extends StatelessWidget {
                 title: 'change_password',
                 icon: Icons.lock_outline_rounded,
                 onTap: () {
-                  completeDataProvider.goToChangePasswordPage();
-                }
+                  if (isGuest) {
+                    showGuestDialog();
+                  } else {
+                    completeDataProvider.goToChangePasswordPage();
+                  }
+                },
               ),
               SettingsTileData(
                 title: 'language',
                 icon: Icons.translate_rounded,
                 onTap: () {
-                  settingsProvider.prepareLanguage(LanguageProvider.languageCode() ?? 'ar',);
+                  settingsProvider.prepareLanguage(
+                    LanguageProvider.languageCode() ?? 'ar',
+                  );
                   settingsProvider.goToLanguagePage();
                 },
               ),
@@ -59,17 +74,23 @@ class SettingsPage extends StatelessWidget {
                 title: 'notification',
                 icon: Icons.notifications_none_rounded,
                 onTap: () {
-                  Provider.of<NotificationProvider>(context, listen: false).goToNotificationPage();
+                  Provider.of<NotificationProvider>(
+                    context,
+                    listen: false,
+                  ).goToNotificationPage();
                 },
               ),
               SettingsTileData(
-                  title: 'logout',
-                  icon: Icons.logout,
-                  onTap: () {
+                title: 'logout',
+                icon: Icons.logout,
+                onTap: () {
+                  if (isGuest) {
+                    context.read<SelectDomainProvider>().exitGuest();
+                  } else {
                     authProvider.confirmLogoutAccount();
                   }
+                },
               ),
-
             ],
           ),
           SizedBox(height: 2.h),
@@ -79,7 +100,7 @@ class SettingsPage extends StatelessWidget {
               SettingsTileData(
                 title: 'about_avms',
                 icon: Icons.info_outline_rounded,
-                onTap: (){
+                onTap: () {
                   settingsProvider.goToPrivacyPage();
                 },
               ),
@@ -87,14 +108,18 @@ class SettingsPage extends StatelessWidget {
                 title: 'version',
                 icon: Icons.system_update_alt_rounded,
                 version: true,
-                onTap: () {}
+                onTap: () {},
               ),
             ],
           ),
           SizedBox(height: 3.h),
           InkWell(
             onTap: () {
-              authProvider.confirmDeleteAccount();
+              if (isGuest) {
+                showGuestDialog();
+              } else {
+                authProvider.confirmDeleteAccount();
+              }
             },
             child: Center(
               child: Text(
@@ -114,11 +139,13 @@ class _ProfileCard extends StatelessWidget {
   final String name;
   final String? imageUrl;
   final VoidCallback onEdit;
+  final bool showEdit;
 
   const _ProfileCard({
     required this.name,
     required this.imageUrl,
     required this.onEdit,
+    required this.showEdit,
   });
 
   @override
@@ -148,22 +175,24 @@ class _ProfileCard extends StatelessWidget {
               color: AppColor.defaultBlackColor,
             ).copyWith(fontWeight: FontWeight.w600),
           ),
-          SizedBox(height: 0.4.h),
-          InkWell(
-            onTap: onEdit,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 0.5.h),
-              child: Text(
-                LanguageProvider.translate("settings", "update_profile"),
-                style: TextStyleClass.smallStyle(color: AppColor.defaultColor)
-                    .copyWith(
-                      fontWeight: FontWeight.w600,
-                      decoration: TextDecoration.underline,
-                      decorationColor: AppColor.defaultColor,
-                    ),
+          if (showEdit) ...[
+            SizedBox(height: 0.4.h),
+            InkWell(
+              onTap: onEdit,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 0.5.h),
+                child: Text(
+                  LanguageProvider.translate("settings", "update_profile"),
+                  style: TextStyleClass.smallStyle(color: AppColor.defaultColor)
+                      .copyWith(
+                        fontWeight: FontWeight.w600,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppColor.defaultColor,
+                      ),
+                ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );

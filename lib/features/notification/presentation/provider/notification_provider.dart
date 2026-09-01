@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:visitor/features/main/presentation/provider/main_page_provider.dart';
 import '../../../../core/constants/constants.dart';
+import '../../../../core/dialog/guest_dialog.dart';
 import '../../../../core/dialog/snack_bar.dart';
 import '../../../../core/helper_function/navigation.dart';
 import '../../../../core/helper_function/firebase_messaging_token.dart';
@@ -95,7 +96,10 @@ class NotificationProvider extends ChangeNotifier implements PaginationClass {
   }
 
   void goToNotificationPage() {
-    // if (AuthProvider.isLogin()) {
+    if (AuthProvider.isGuestMode()) {
+      showGuestDialog();
+      return;
+    }
     refresh();
     navP(
       NotificationPage(),
@@ -106,9 +110,6 @@ class NotificationProvider extends ChangeNotifier implements PaginationClass {
         ).getProfile();
       },
     );
-    // } else {
-    //   showGuestDialog();
-    // }
   }
 
   void goToNotificationDetailsPage({
@@ -195,14 +196,18 @@ class NotificationProvider extends ChangeNotifier implements PaginationClass {
     data['deviceType'] = getDeviceType();
     Either<DioException, bool> value = await notificationUseCases
         .registerDevice(data);
-    value.fold((l) {
-      showToast(
-        l.response?.data['error'] ??
-            l.message ??
-            LanguageProvider.translate('error', 'error'),
-      );
-
-    }, (r) {unreadCount();});
+    value.fold(
+      (l) {
+        showToast(
+          l.response?.data['error'] ??
+              l.message ??
+              LanguageProvider.translate('error', 'error'),
+        );
+      },
+      (r) {
+        unreadCount();
+      },
+    );
   }
 
   Future<void> unregisterDevice() async {

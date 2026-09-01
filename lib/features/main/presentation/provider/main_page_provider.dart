@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import '../../../../config/app_color.dart';
 import '../../../../core/constants/constants.dart';
 import '../../../../core/constants/images.dart';
+import '../../../../core/dialog/guest_dialog.dart';
 import '../../../../core/helper_function/helper_function.dart';
 import '../../../../core/helper_function/navigation.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../settings/presentation/pages/settings_page.dart';
 import '../../../visitors/presentation/pages/visitors_page.dart';
 import '../../../visitors/presentation/providers/visitors_provider.dart';
@@ -42,10 +44,10 @@ class MainProvider extends ChangeNotifier {
   }
 
   void setIndex(int index) async {
-    // if (!AuthProvider.isLogin()) {
-    //   showGuestDialog();
-    //   return;
-    // }
+    if (AuthProvider.isGuestMode() && index == 1) {
+      showGuestDialog();
+      return;
+    }
     previousIndex = 6;
     this.index = index;
     notifyListeners();

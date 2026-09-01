@@ -10,39 +10,58 @@ import '../../../language/presentation/provider/language_provider.dart';
 import '../provider/select_domain_provider.dart';
 
 class SelectDomainPage extends StatelessWidget {
-  const SelectDomainPage({super.key,});
+  const SelectDomainPage({super.key});
   @override
   Widget build(BuildContext context) {
-    SelectDomainProvider selectDomainProvider = Provider.of<SelectDomainProvider>(context);
+    SelectDomainProvider selectDomainProvider =
+        Provider.of<SelectDomainProvider>(context);
     return Scaffold(
       backgroundColor: AppColor.backgroundColor,
       body: SafeArea(
-        child: Container(height: 100.h,width: 100.w,
+        child: Container(
+          height: 100.h,
+          width: 100.w,
           padding: EdgeInsets.symmetric(horizontal: 6.w),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 15.h,),
-                TextFieldWidget(controller: selectDomainProvider.codeController,
+                SizedBox(height: 15.h),
+                TextFieldWidget(
+                  controller: selectDomainProvider.codeController,
                   label: LanguageProvider.translate("auth", "select_domain"),
-                  ),
-                SizedBox(height: 5.h,),
+                ),
+                SizedBox(height: 5.h),
 
                 Center(
-                  child: ButtonWidget(width: 50.w,
-                    onTap: (){
-                      if(selectDomainProvider.codeController.text.isNotEmpty){
+                  child: ButtonWidget(
+                    width: 50.w,
+                    onTap: () {
+                      if (selectDomainProvider.codeController.text.isNotEmpty) {
                         selectDomainProvider.getDomain();
-                      }else{
-                        showToast(LanguageProvider.translate("auth", "select_domain"));
+                      } else {
+                        showToast(
+                          LanguageProvider.translate("auth", "select_domain"),
+                        );
                       }
                     },
                     text: "save",
                   ),
-                )
-
+                ),
+                SizedBox(height: 1.5.h),
+                Center(
+                  child: ButtonWidget(
+                    width: 50.w,
+                    color: Colors.white,
+                    borderColor: AppColor.defaultColor,
+                    textStyle: TextStyleClass.buttonStyle(
+                      color: AppColor.defaultColor,
+                    ),
+                    onTap: selectDomainProvider.continueAsGuest,
+                    text: "continue_as_guest",
+                  ),
+                ),
               ],
             ),
           ),

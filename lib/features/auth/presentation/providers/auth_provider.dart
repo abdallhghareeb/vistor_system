@@ -42,6 +42,10 @@ class AuthProvider extends ChangeNotifier {
     return sharedPreferences.getString('token') != null;
   }
 
+  static bool isGuestMode() {
+    return sharedPreferences.getBool('guest_mode') ?? false;
+  }
+
   Future getProfile({bool fromSplash = false, bool fromLogin = false}) async {
     Map<String, dynamic> data = {};
     Either<DioException, UserEntity> login = await userUseCases.getProfile(
@@ -67,15 +71,15 @@ class AuthProvider extends ChangeNotifier {
   }
 
   bool isGuest() {
-    return userEntity == null;
+    return isGuestMode();
   }
 
-  void guestButton() {
+  void startGuestSession() {
+    userEntity = null;
     sharedPreferences.setBool('intro', true);
-    Provider.of<AuthProvider>(
-      Constants.globalContext(),
-      listen: false,
-    ).goToLoginPage();
+    sharedPreferences.setBool('guest_mode', true);
+    sharedPreferences.remove('token');
+    notifyListeners();
   }
 
   List<TextFieldModel> loginInputs = [];
@@ -97,7 +101,6 @@ class AuthProvider extends ChangeNotifier {
       errorSnackBar(title: nameError.trim());
     }
   }
-
 
   Future refreshToken({String? token}) async {
     Map<String, dynamic> data = {};
@@ -230,6 +233,7 @@ class AuthProvider extends ChangeNotifier {
       ),
     ];
     sharedPreferences.remove('token');
+    sharedPreferences.remove('guest_mode');
     navPARU(const LoginPage());
   }
 
@@ -315,6 +319,7 @@ class AuthProvider extends ChangeNotifier {
   void successLogout() {
     userEntity = null;
     sharedPreferences.remove('token');
+    sharedPreferences.remove('guest_mode');
     goToLoginPage();
   }
 

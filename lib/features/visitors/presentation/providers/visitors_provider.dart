@@ -3,10 +3,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:visitor/core/constants/constants.dart';
 
+import '../../../../core/dialog/guest_dialog.dart';
 import '../../../../core/dialog/snack_bar.dart';
 import '../../../../core/helper_function/convert.dart';
 import '../../../../core/models/pagination_class.dart';
 import '../../../language/presentation/provider/language_provider.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/entities/visitor_entity.dart';
 import '../../domain/usecases/visitors_usecases.dart';
 import '../widgets/invitation_details_widget.dart';
@@ -23,7 +25,77 @@ class VisitorsProvider extends ChangeNotifier implements PaginationClass {
   final TextEditingController searchController = TextEditingController();
 
   List<VisitorTransactionEntity>? quickOverview;
+
+  void setGuestQuickOverview() {
+    final now = DateTime.now();
+    quickOverview = [
+      _guestTransaction(
+        'Ahmed Hassan',
+        'in',
+        now.subtract(const Duration(minutes: 8)),
+        'Reception A',
+      ),
+      _guestTransaction(
+        'Sara Mohamed',
+        'out',
+        now.subtract(const Duration(minutes: 24)),
+        'Main Lobby',
+      ),
+      _guestTransaction(
+        'Omar Ali',
+        'in',
+        now.subtract(const Duration(minutes: 41)),
+        'Meeting Room B',
+      ),
+      _guestTransaction(
+        'Mariam Adel',
+        'out',
+        now.subtract(const Duration(hours: 1, minutes: 12)),
+        'Reception B',
+      ),
+      _guestTransaction(
+        'Youssef Ibrahim',
+        'in',
+        now.subtract(const Duration(hours: 2)),
+        'Main Lobby',
+      ),
+    ];
+    notifyListeners();
+  }
+
+  VisitorTransactionEntity _guestTransaction(
+    String name,
+    String transactionType,
+    DateTime createdAt,
+    String area,
+  ) {
+    return VisitorTransactionEntity(
+      fullName: name,
+      documentId: 'GUEST-DEMO',
+      cardNumber: 'AV-${createdAt.minute.toString().padLeft(3, '0')}',
+      visitorImage: null,
+      documentImage: null,
+      registrationDate: createdAt.subtract(const Duration(days: 1)),
+      expiryDate: createdAt.add(const Duration(days: 1)),
+      transactionType: transactionType,
+      transactionCreatedUserId: 'guest-demo',
+      createdUserName: 'Demo Operator',
+      status: 1,
+      areaName: area,
+      createDate: createdAt,
+      isSuccess: true,
+      phoneNumber: null,
+      companyName: 'AVMS Demo',
+      unitName: area,
+      statusValue: transactionType == 'in' ? 'Checked In' : 'Checked Out',
+    );
+  }
+
   Future<void> getQuickOverview() async {
+    if (AuthProvider.isGuestMode()) {
+      setGuestQuickOverview();
+      return;
+    }
     Map<String, dynamic> data = {};
     data['PageNumber'] = 1;
     data['PageSize'] = 5;
@@ -32,8 +104,13 @@ class VisitorsProvider extends ChangeNotifier implements PaginationClass {
         await visitorsUseCases.getAllTransactions(data);
     result.fold(
       (l) {
-        showToast(l.response?.data['error'] ?? l.message ?? LanguageProvider.translate('error', 'error'),);
-      }, (r) {
+        showToast(
+          l.response?.data['error'] ??
+              l.message ??
+              LanguageProvider.translate('error', 'error'),
+        );
+      },
+      (r) {
         quickOverview = [];
         quickOverview?.addAll(r);
         notifyListeners();
@@ -227,12 +304,10 @@ class VisitorsProvider extends ChangeNotifier implements PaginationClass {
     }
 
     if (startDate != null) {
-      data['CreateDateFrom'] =
-          '${convertDateToStringYMD(startDate)}T00:00:00';
+      data['CreateDateFrom'] = '${convertDateToStringYMD(startDate)}T00:00:00';
     }
     if (endDate != null) {
-      data['CreateDateTo'] =
-          '${convertDateToStringYMD(endDate)}T23:59:59';
+      data['CreateDateTo'] = '${convertDateToStringYMD(endDate)}T23:59:59';
     }
   }
 
@@ -243,7 +318,11 @@ class VisitorsProvider extends ChangeNotifier implements PaginationClass {
     super.dispose();
   }
 
-  void showVisitWidget(VisitorTransactionEntity transaction){
+  void showVisitWidget(VisitorTransactionEntity transaction) {
+    if (AuthProvider.isGuestMode()) {
+      showGuestDialog();
+      return;
+    }
     showModalBottomSheet(
       context: Constants.globalContext(),
       isScrollControlled: true,

@@ -43,19 +43,20 @@ class CompleteDataProvider extends ChangeNotifier {
   final GlobalKey<FormState> changePasswordFormKey = GlobalKey<FormState>();
 
   List<TextFieldModel> registerInputs = [];
-  AuthProvider authProvider = Provider.of(Constants.globalContext(), listen: false,);
+  AuthProvider authProvider = Provider.of(
+    Constants.globalContext(),
+    listen: false,
+  );
 
   ImageProvider showUserImage() {
     if (authProvider.userEntity?.pictureUrl != null || image != null) {
       if (image != null) {
         return FileImage(File(image!.path));
       } else {
-        return CachedNetworkImageProvider(
-          authProvider.userEntity!.pictureUrl!,
-        );
+        return CachedNetworkImageProvider(authProvider.userEntity!.pictureUrl!);
       }
-    }else{
-    return const AssetImage(Images.logo);
+    } else {
+      return const AssetImage(Images.logo);
     }
   }
 
@@ -76,8 +77,11 @@ class CompleteDataProvider extends ChangeNotifier {
         validator: (value) => validatePassword(value),
         label: "currentPassword",
         onShownTap: () {
-          registerInputs.firstWhere((element) => element.key == "currentPassword").obscureText =
-          !registerInputs.firstWhere((element) => element.key == "currentPassword").obscureText;
+          registerInputs
+              .firstWhere((element) => element.key == "currentPassword")
+              .obscureText = !registerInputs
+              .firstWhere((element) => element.key == "currentPassword")
+              .obscureText;
           notifyListeners();
         },
         next: true,
@@ -89,8 +93,11 @@ class CompleteDataProvider extends ChangeNotifier {
         validator: (value) => validatePassword(value),
         label: "newPassword",
         onShownTap: () {
-          registerInputs.firstWhere((element) => element.key == "password").obscureText =
-          !registerInputs.firstWhere((element) => element.key == "password").obscureText;
+          registerInputs
+              .firstWhere((element) => element.key == "password")
+              .obscureText = !registerInputs
+              .firstWhere((element) => element.key == "password")
+              .obscureText;
           notifyListeners();
         },
         next: false,
@@ -99,9 +106,12 @@ class CompleteDataProvider extends ChangeNotifier {
     navP(const ResetPasswordPage());
   }
 
-  void goToRegisterPage() async{
+  void goToRegisterPage() async {
     loading();
-    await Provider.of<AuthProvider>(Constants.globalContext(),listen: false).getProfile(fromLogin: true);
+    await Provider.of<AuthProvider>(
+      Constants.globalContext(),
+      listen: false,
+    ).getProfile(fromLogin: true);
     navPop();
 
     image = null;
@@ -179,12 +189,15 @@ class CompleteDataProvider extends ChangeNotifier {
     }
   }
 
-
   void successLogin({
     required UserEntity userEntity,
     bool fromSplash = false,
   }) async {
-    MainProvider mainProvider = Provider.of<MainProvider>(Constants.globalContext(), listen: false,);
+    sharedPreferences.remove('guest_mode');
+    MainProvider mainProvider = Provider.of<MainProvider>(
+      Constants.globalContext(),
+      listen: false,
+    );
     if (authProvider.userEntity != null && !fromSplash) {
       authProvider.userEntity = userEntity;
       mainProvider.rebuild();
@@ -195,7 +208,10 @@ class CompleteDataProvider extends ChangeNotifier {
         ApiHandel.getInstance.updateHeader(userEntity.token!);
       }
       await getDataReady();
-      VisitorsProvider visitorsProvider = Provider.of<VisitorsProvider>(Constants.globalContext(), listen: false,);
+      VisitorsProvider visitorsProvider = Provider.of<VisitorsProvider>(
+        Constants.globalContext(),
+        listen: false,
+      );
       visitorsProvider.getQuickOverview();
       mainProvider.goToMainPage(fromSplash: fromSplash);
       // if(userEntity.user?.employee !=null || userEntity.user?.employeeId !=null){
@@ -204,7 +220,11 @@ class CompleteDataProvider extends ChangeNotifier {
       //   gotoPlaceHolderEmployeePage();
       // }
     }
-    NotificationProvider notificationProvider = Provider.of<NotificationProvider>(Constants.globalContext(), listen: false,);
+    NotificationProvider notificationProvider =
+        Provider.of<NotificationProvider>(
+          Constants.globalContext(),
+          listen: false,
+        );
 
     notificationProvider.registerDevice();
   }
@@ -238,10 +258,10 @@ class CompleteDataProvider extends ChangeNotifier {
         data[element.key ?? ""] = element.controller.text;
       }
     } else {
-      if(imageUpdated && image is XFile){
+      if (imageUpdated && image is XFile) {
         data['Image'] = await MultipartFile.fromFile(image!.path);
       }
-      data['Roles']= "Operator";
+      data['Roles'] = "Operator";
       for (var element in registerInputs) {
         if (element.controller.text != '') {
           data[element.key ?? ""] = element.controller.text;
@@ -249,7 +269,9 @@ class CompleteDataProvider extends ChangeNotifier {
       }
     }
     loading();
-    Either<DioException,UserEntity> login = await userUseCases.updateProfile(data,);
+    Either<DioException, UserEntity> login = await userUseCases.updateProfile(
+      data,
+    );
     navPop();
     login.fold(
       (l) {
@@ -261,9 +283,18 @@ class CompleteDataProvider extends ChangeNotifier {
           listen: false,
         );
         authProvider.userEntity = r;
-        Provider.of<LanguageProvider>(Constants.globalContext(), listen: false,).rebuild();
-        Provider.of<SettingsProvider>(Constants.globalContext(), listen: false,).rebuild();
-        Provider.of<MainProvider>(Constants.globalContext(), listen: false,).rebuild();
+        Provider.of<LanguageProvider>(
+          Constants.globalContext(),
+          listen: false,
+        ).rebuild();
+        Provider.of<SettingsProvider>(
+          Constants.globalContext(),
+          listen: false,
+        ).rebuild();
+        Provider.of<MainProvider>(
+          Constants.globalContext(),
+          listen: false,
+        ).rebuild();
         successDialog(
           then: () {
             navPU();
@@ -281,10 +312,43 @@ class CompleteDataProvider extends ChangeNotifier {
   List<Map<String, dynamic>>? checkData;
   num totalVisitors = 0;
 
+  void setGuestHomeData() {
+    totalVisitors = 1248;
+    checkData = [
+      {
+        "title": "checked_out",
+        "num": "18",
+        "sub_title": "checked_out_des",
+        "color": 0xffE35151,
+      },
+      {
+        "title": "checked_in",
+        "num": "42",
+        "sub_title": "checked_in_des",
+        "color": 0xff16A34A,
+      },
+      {
+        "title": "expected_visitors",
+        "num": "27",
+        "sub_title": "expected_visitors_des",
+        "color": 0xff6B7280,
+      },
+      {
+        "title": "total_transaction",
+        "num": "60",
+        "sub_title": "total_transaction_des",
+        "color": 0xffF59E0B,
+      },
+    ];
+    notifyListeners();
+  }
+
   Future getDataReady() async {
     Map<String, dynamic> data = {};
     loading();
-    Either<DioException, TabEntity> login = await userUseCases.getTabsInfo(data,);
+    Either<DioException, TabEntity> login = await userUseCases.getTabsInfo(
+      data,
+    );
     navPop();
     login.fold(
       (l) {
@@ -329,12 +393,10 @@ class CompleteDataProvider extends ChangeNotifier {
     super.dispose();
   }
 
-
   List<TextFieldModel> changePasswordInputs = [];
 
-  void goToChangePasswordPage(){
+  void goToChangePasswordPage() {
     changePasswordInputs = [
-
       TextFieldModel(
         key: "oldPassword",
         controller: TextEditingController(),
@@ -342,8 +404,11 @@ class CompleteDataProvider extends ChangeNotifier {
         validator: (value) => validatePassword(value),
         label: "old_password",
         onShownTap: () {
-          passwordInputs.firstWhere((element) => element.key == "oldPassword").obscureText =
-          !passwordInputs.firstWhere((element) => element.key == "oldPassword").obscureText;
+          passwordInputs
+              .firstWhere((element) => element.key == "oldPassword")
+              .obscureText = !passwordInputs
+              .firstWhere((element) => element.key == "oldPassword")
+              .obscureText;
           notifyListeners();
         },
         next: true,
@@ -355,8 +420,11 @@ class CompleteDataProvider extends ChangeNotifier {
         validator: (value) => validatePassword(value),
         label: "new_password",
         onShownTap: () {
-          passwordInputs.firstWhere((element) => element.key == "newPassword").obscureText =
-          !passwordInputs.firstWhere((element) => element.key == "newPassword").obscureText;
+          passwordInputs
+              .firstWhere((element) => element.key == "newPassword")
+              .obscureText = !passwordInputs
+              .firstWhere((element) => element.key == "newPassword")
+              .obscureText;
           notifyListeners();
         },
         next: false,
@@ -365,15 +433,24 @@ class CompleteDataProvider extends ChangeNotifier {
         key: "confirmPassword",
         controller: TextEditingController(),
         textInputType: TextInputType.visiblePassword,
-        validator: (value){
-          String password= changePasswordInputs.firstWhere((element) => element.key == "newPassword").controller.text;
-          String confirmPassword= changePasswordInputs.firstWhere((element) => element.key == "confirmPassword").controller.text;
+        validator: (value) {
+          String password = changePasswordInputs
+              .firstWhere((element) => element.key == "newPassword")
+              .controller
+              .text;
+          String confirmPassword = changePasswordInputs
+              .firstWhere((element) => element.key == "confirmPassword")
+              .controller
+              .text;
 
           if (value == null || value.isEmpty) {
             return LanguageProvider.translate("validation", "empty_password");
           }
           if (value.length < 6) {
-            return LanguageProvider.translate("validation", "password_min_length");
+            return LanguageProvider.translate(
+              "validation",
+              "password_min_length",
+            );
           }
           if (password != confirmPassword) {
             return LanguageProvider.translate("validation", "confirm_password");
@@ -383,13 +460,15 @@ class CompleteDataProvider extends ChangeNotifier {
         },
         label: "confirm_new_password",
         onShownTap: () {
-          changePasswordInputs.firstWhere((element) => element.key == "confirmPassword").obscureText =
-          !changePasswordInputs.firstWhere((element) => element.key == "confirmPassword").obscureText;
+          changePasswordInputs
+              .firstWhere((element) => element.key == "confirmPassword")
+              .obscureText = !changePasswordInputs
+              .firstWhere((element) => element.key == "confirmPassword")
+              .obscureText;
           notifyListeners();
         },
         next: true,
       ),
-
     ];
 
     navP(ChangePasswordPage());
@@ -397,23 +476,27 @@ class CompleteDataProvider extends ChangeNotifier {
 
   Future changePassword() async {
     Map<String, dynamic> data = {};
-    for(var element in changePasswordInputs){
+    for (var element in changePasswordInputs) {
       data["${element.key}"] = element.controller.text;
     }
     loading();
     Either<DioException, bool> login = await userUseCases.changePassword(data);
     navPop();
-    login.fold((l) {
-      showToast(l.response?.data['message']?? l.message);
-      }, (r) async {
-      for(var element in changePasswordInputs){
-        element.controller.clear();
-      }
-      successDialog(then: () {navPop();},);
+    login.fold(
+      (l) {
+        showToast(l.response?.data['message'] ?? l.message);
+      },
+      (r) async {
+        for (var element in changePasswordInputs) {
+          element.controller.clear();
+        }
+        successDialog(
+          then: () {
+            navPop();
+          },
+        );
       },
     );
     notifyListeners();
   }
-
-
 }

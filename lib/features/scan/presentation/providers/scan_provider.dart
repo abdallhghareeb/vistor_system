@@ -11,6 +11,8 @@ import 'package:visitor/features/language/presentation/provider/language_provide
 
 import '../../../../core/dialog/snack_bar.dart';
 import '../../../../core/dialog/confirm_dialog.dart';
+import '../../../../core/dialog/guest_dialog.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 
 enum ScanStage {
   scanning,
@@ -134,14 +136,23 @@ class ScanProvider extends ChangeNotifier {
 
     Map<String, dynamic> data = {};
     data['invitationId'] = currentInvitation.id;
-    data['cardNumber'] = currentInvitation.cardNumber.isNotEmpty ? currentInvitation.cardNumber : cardNumber;
-    data['transactionType'] = currentInvitation.transactionType == 'in' ? 'out' : 'in';
+    data['cardNumber'] = currentInvitation.cardNumber.isNotEmpty
+        ? currentInvitation.cardNumber
+        : cardNumber;
+    data['transactionType'] = currentInvitation.transactionType == 'in'
+        ? 'out'
+        : 'in';
     data['createDate'] = DateTime.now().toUtc().toIso8601String();
 
     final result = await scanUseCases.createTransaction(data);
 
-    result.fold((error) {
-      showToast(error.response?.data['error'] ?? error.message ?? LanguageProvider.translate('error', 'error'),);
+    result.fold(
+      (error) {
+        showToast(
+          error.response?.data['error'] ??
+              error.message ??
+              LanguageProvider.translate('error', 'error'),
+        );
       },
       (_) {
         transactionDate = DateTime.now();
@@ -184,6 +195,10 @@ class ScanProvider extends ChangeNotifier {
   }
 
   void goToScanPage({VoidCallback? onReturn}) {
+    if (AuthProvider.isGuestMode()) {
+      showGuestDialog();
+      return;
+    }
     navP(const ScanPage(), then: (_) => onReturn?.call());
   }
 

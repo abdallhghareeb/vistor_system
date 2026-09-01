@@ -8,6 +8,8 @@
   },
   "auth": {
     "select_domain": "الرجاء إدخال النطاق...",
+    "guest_mode": "وضع الزائر",
+    "guest_login_required": "يرجى تسجيل الدخول لاستخدام هذه الخاصية.",
     "reset_domain": "إعادة تعيين النطاق",
     "invalid_domain": "عذراً، هذا النطاق غير صحيح. يرجى التحقق منه والمحاولة مرة أخرى.",
     "login": "تسجيل الدخول",
@@ -47,7 +49,8 @@
     "quick_scan": "مسح سريع",
     "quick_scan_des": "تسجيل دخول فوري للزوار",
     "search_visitor": "بحث عن زائر",
-    "search_visitor_des": "بحث يدوي بالاسم"
+    "search_visitor_des": "بحث يدوي بالاسم",
+    "guest_preview_data": "تنبيه: هذه البيانات تجريبية وليست بيانات حقيقية."
   },
   "error": {
     "max_distance": "يجب أن تسمح بمسافة أقل من",
@@ -61,6 +64,7 @@
     "load_data_failed": "تعذر تحميل البيانات"
   },
   "settings": {
+    "guest_name": "ضيفنا",
     "id": "المعرف: *id*",
     "general": "عام",
     "support": "الدعم",
@@ -263,6 +267,7 @@
   },
   "buttons": {
     "login": "تسجيل الدخول",
+    "continue_as_guest": "الدخول كزائر",
     "send_code": "إرسال الرمز",
     "update_password": "تحديث كلمة المرور",
     "delete_account": "حذف الحساب",

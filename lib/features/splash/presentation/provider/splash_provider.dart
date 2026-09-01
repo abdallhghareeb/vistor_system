@@ -30,7 +30,18 @@ class SplashProvider extends ChangeNotifier {
 
   void startApp() async {
     // isEndAnimation= true;
-    var settingsProvider = Provider.of<SettingsProvider>(Constants.globalContext(), listen: false);
+    if (AuthProvider.isGuestMode()) {
+      sharedPreferences.remove('guest_mode');
+      Provider.of<SelectDomainProvider>(
+        Constants.globalContext(),
+        listen: false,
+      ).goToSelectDomainPage();
+      return;
+    }
+    var settingsProvider = Provider.of<SettingsProvider>(
+      Constants.globalContext(),
+      listen: false,
+    );
     await settingsProvider.mobileVersion();
 
     // PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -48,15 +59,20 @@ class SplashProvider extends ChangeNotifier {
     } else {
       if (foundDomain == null) {
         Provider.of<SelectDomainProvider>(
-          Constants.globalContext(), listen: false,).goToSelectDomainPage();
-      }else{
-        AuthProvider authProvider = Provider.of<AuthProvider>(Constants.globalContext(), listen: false,);
+          Constants.globalContext(),
+          listen: false,
+        ).goToSelectDomainPage();
+      } else {
+        AuthProvider authProvider = Provider.of<AuthProvider>(
+          Constants.globalContext(),
+          listen: false,
+        );
         String? login = sharedPreferences.getString('token');
         if (login != null) {
           authProvider.getProfile(fromSplash: true);
         } else {
           authProvider.goToLoginPage();
-      }
+        }
       }
     }
   }
@@ -73,7 +89,7 @@ class SplashProvider extends ChangeNotifier {
     //   Provider.of<AuthProvider>(Constants.globalContext(), listen: false,).goToLoginPage();
     //   sharedPreferences.setBool("intro", true);
     // }
-    if(index<intro.length - 1){
+    if (index < intro.length - 1) {
       index++;
     }
     notifyListeners();
@@ -87,7 +103,10 @@ class SplashProvider extends ChangeNotifier {
   Widget skipIntro() {
     return InkWell(
       onTap: () {
-        Provider.of<SelectDomainProvider>(Constants.globalContext(), listen: false,).goToSelectDomainPage();
+        Provider.of<SelectDomainProvider>(
+          Constants.globalContext(),
+          listen: false,
+        ).goToSelectDomainPage();
       },
       child: Row(
         children: [

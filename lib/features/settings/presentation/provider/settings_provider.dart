@@ -60,7 +60,7 @@ class SettingsProvider extends ChangeNotifier {
     navP(LanguagePage());
   }
 
-  String version = "0.0";
+  String version = "1.0.4";
   bool correctDomain= false;
   Future mobileVersion() async {
     Either<DioException, VersionEntity> login = await settingsUseCases.mobileVersion();

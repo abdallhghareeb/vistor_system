@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:visitor/features/language/presentation/provider/language_provider.dart';
 import 'package:visitor/features/scan/presentation/providers/scan_provider.dart';
+import 'package:visitor/features/auth/presentation/providers/auth_provider.dart';
 import '../../../../config/app_color.dart';
 import '../../../../config/text_style.dart';
 import '../../../../config/theme.dart';
@@ -29,6 +30,48 @@ class HomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const HomeAppBarWidget(),
+              if (AuthProvider.isGuestMode()) ...[
+                Padding(
+                  padding: EdgeInsets.fromLTRB(3.5.w, 0, 3.5.w, 1.5.h),
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 3.5.w,
+                      vertical: 1.6.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffFFF4E5),
+                      borderRadius: BorderRadius.circular(2.5.w),
+                      border: Border.all(color: const Color(0xffF59E0B)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.warning_amber_rounded,
+                          color: const Color(0xffD97706),
+                          size: 7.w,
+                        ),
+                        SizedBox(width: 3.w),
+                        Expanded(
+                          child: Text(
+                            LanguageProvider.translate(
+                              'home',
+                              'guest_preview_data',
+                            ),
+                            style:
+                                TextStyleClass.normalStyle(
+                                  color: const Color(0xff9A5300),
+                                ).copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  height: 1.35,
+                                ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 3.5.w),
                 child: Column(
